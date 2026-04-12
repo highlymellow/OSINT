@@ -108,10 +108,10 @@ export default function LandingPage() {
                   initial={{ opacity: 0, y: 16 }}
                   animate={{ opacity: 1, y: 0 }}
                   transition={{ duration: 0.5, delay: 0.1 }}
-                  className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full border border-gold/25 bg-gold/5 mb-8"
+                  className="inline-flex items-center gap-2 px-5 py-2 rounded-full border border-gold/40 bg-gold/10 mb-8 shadow-[0_0_15px_rgba(201,168,76,0.15)] animate-shimmer bg-[length:200%_100%]"
                 >
-                  <Shield size={13} className="text-gold" />
-                  <span className="text-[11px] font-medium tracking-[0.15em] text-gold uppercase">
+                  <Shield size={14} className="text-gold" />
+                  <span className="text-[11px] font-bold tracking-[0.15em] text-gold uppercase">
                     Geo-Political OSINT Platform
                   </span>
                 </motion.div>
@@ -152,12 +152,11 @@ export default function LandingPage() {
                   transition={{ duration: 0.5, delay: 0.7 }}
                   className="flex flex-col sm:flex-row items-center justify-center gap-3"
                 >
-                  <Button variant="gold" size="lg" onClick={() => setMode('platform')} className="gold-glow">
-                    <Zap size={15} />
+                  <Button variant="gold" size="lg" onClick={() => setMode('platform')} className="gold-glow group flex items-center gap-2">
                     Enter Intelligence Platform
-                    <ArrowRight size={15} />
+                    <ArrowRight size={15} className="group-hover:translate-x-1.5 transition-transform" />
                   </Button>
-                  <Button variant="outline" size="lg" asChild>
+                  <Button variant="outline" size="lg" className="px-8 min-w-[200px]" asChild>
                     <a href="#capabilities">
                       Explore Capabilities
                       <ChevronRight size={15} />
@@ -186,8 +185,8 @@ export default function LandingPage() {
       </section>
 
       {/* ═══ DASHBOARD PREVIEW ══════════════════════════════════════ */}
-      <section className="py-24 px-6 md:px-12 lg:px-16 w-full flex flex-col items-center">
-        <div className="w-full max-w-6xl flex flex-col items-center">
+      <section className="pt-40 pb-32 md:pt-56 md:pb-48 px-6 md:px-12 lg:px-16 w-full flex flex-col items-center border-b border-white/5 bg-background relative z-10">
+        <div className="w-full max-w-7xl flex flex-col items-center">
           <motion.div
             initial={{ opacity: 0, y: 40 }}
             whileInView={{ opacity: 1, y: 0 }}
@@ -232,21 +231,21 @@ export default function LandingPage() {
                   </div>
                 </div>
                 {/* KPI row sim */}
-                <div className="grid grid-cols-4 gap-2">
+                <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
                   {[
                     { label: 'STI Score', val: '65', unit: '/ 100', color: 'text-orange-400' },
                     { label: 'Active Events', val: '142', unit: 'today', color: 'text-red-400' },
                     { label: 'Actors Tracked', val: '27', unit: 'entities', color: 'text-purple-400' },
                     { label: 'Confidence', val: '87%', unit: 'avg', color: 'text-gold' },
                   ].map(kpi => (
-                    <div key={kpi.label} className="p-3 rounded-lg bg-surface/60 border border-border/30">
-                      <div className="text-[8px] text-text-muted uppercase tracking-wider mb-1">{kpi.label}</div>
-                      <div className={`text-xl font-bold font-mono ${kpi.color}`}>{kpi.val} <span className="text-[9px] text-text-muted font-normal">{kpi.unit}</span></div>
+                    <div key={kpi.label} className="p-4 rounded-xl bg-surface/60 border border-border/30">
+                      <div className="text-[9px] text-text-muted uppercase tracking-wider mb-2 font-medium">{kpi.label}</div>
+                      <div className={`text-2xl font-bold font-mono ${kpi.color}`}>{kpi.val} <span className="text-[10px] text-text-muted font-normal">{kpi.unit}</span></div>
                     </div>
                   ))}
                 </div>
                 {/* Chart sim row */}
-                <div className="grid grid-cols-3 gap-2">
+                <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
                   <div className="col-span-2 h-36 rounded-lg bg-surface/60 border border-border/30 p-4 overflow-hidden">
                     <div className="text-[8px] text-text-muted uppercase tracking-wider mb-3">STI Trend · 30 Days</div>
                     <svg viewBox="0 0 300 80" className="w-full h-20">
@@ -286,25 +285,25 @@ export default function LandingPage() {
       </section>
 
       {/* ═══ CAPABILITIES — 4-Column Grid ══════════════════════════ */}
-      <section id="capabilities" className="py-24 px-6 md:px-12 lg:px-20 w-full flex flex-col items-center justify-center">
-        <div className="w-full max-w-6xl flex flex-col items-center space-y-12">
+      <section id="capabilities" className="py-40 md:py-56 px-6 md:px-12 lg:px-20 w-full flex flex-col items-center justify-center bg-[linear-gradient(to_bottom,rgba(255,255,255,0.02)_0%,transparent_100%)]">
+        <div className="w-full max-w-7xl flex flex-col items-center space-y-24">
           <motion.div
             initial={{ opacity: 0, y: 30 }}
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true, margin: '-80px' }}
             transition={{ duration: 0.5 }}
-            className="text-center md:mb-12"
+            className="w-full flex flex-col items-center justify-center text-center md:mb-12"
           >
-            <h2 className="text-3xl md:text-4xl font-bold mb-4">
+            <h2 className="text-3xl md:text-4xl font-bold mb-4 w-full text-center">
               Built for the <span className="text-gold">MENA operating environment</span>
             </h2>
-            <p className="text-sm text-muted-foreground max-w-lg mx-auto leading-relaxed">
+            <p className="text-sm text-muted-foreground max-w-lg text-center leading-relaxed">
               Every algorithm, pipeline, and feature is optimized for Iraq first — 
               then extensible across the MENA region and beyond.
             </p>
           </motion.div>
 
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8 md:gap-12 w-full max-w-5xl mx-auto">
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-10 md:gap-16 w-full">
             {CAPABILITIES.map((cap, i) => (
               <motion.div
                 key={cap.title}
@@ -333,13 +332,13 @@ export default function LandingPage() {
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true, margin: '-80px' }}
             transition={{ duration: 0.5 }}
-            className="text-center mb-16 md:mb-24 relative z-50 text-shadow-md"
+            className="w-full flex flex-col items-center justify-center text-center mb-16 md:mb-24 relative z-50 text-shadow-md"
           >
             <Badge variant="gold" className="mb-4">Data Ingestion Pipeline</Badge>
-            <h2 className="text-3xl md:text-5xl font-bold mb-4">
+            <h2 className="text-3xl md:text-5xl font-bold mb-4 w-full text-center">
               Real-Time <span className="text-gold">Signal Processing</span>
             </h2>
-            <p className="text-sm text-muted-foreground max-w-xl mx-auto leading-relaxed">
+            <p className="text-sm text-muted-foreground max-w-xl text-center leading-relaxed">
               Continuous monitoring across tens of thousands of unstructured channels, instantly triaged by the fusion engine.
             </p>
           </motion.div>
@@ -365,33 +364,33 @@ export default function LandingPage() {
               </div>
             </div>
 
-            <Radar className="absolute bottom-12 md:bottom-20 scale-[1.8] md:scale-[3] opacity-80" />
-            <div className="absolute -bottom-10 z-[60] h-32 w-full bg-gradient-to-t from-surface-elevated via-background/80 to-transparent" />
+            <Radar className="absolute bottom-12 md:bottom-20 scale-[1.5] md:scale-[2.2] opacity-[0.85]" />
+            <div className="absolute -bottom-10 z-[60] h-32 w-full bg-gradient-to-t from-surface-elevated via-surface-elevated/90 to-transparent pointer-events-none" />
           </div>
         </div>
       </section>
 
       {/* ═══ MODULE GRID ═══════════════════════════════════════════ */}
-      <section className="py-24 px-6 md:px-12 lg:px-20 w-full flex flex-col items-center justify-center">
-        <div className="w-full max-w-6xl flex flex-col items-center text-center">
+      <section className="py-40 md:py-56 px-6 md:px-12 lg:px-20 w-full flex flex-col items-center justify-center bg-background">
+        <div className="w-full max-w-7xl flex flex-col items-center text-center">
           <motion.div
             initial={{ opacity: 0, y: 30 }}
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true, margin: '-80px' }}
             transition={{ duration: 0.5 }}
-            className="text-center mb-14"
+            className="w-full flex flex-col items-center justify-center text-center mb-14"
           >
             <Badge variant="gold" className="mb-4">8 Interconnected Modules</Badge>
-            <h2 className="text-3xl md:text-5xl font-bold mb-4">
+            <h2 className="text-3xl md:text-5xl font-bold mb-4 text-center">
               Intelligence <span className="text-gold">Architecture</span>
             </h2>
-            <p className="text-muted-foreground max-w-lg mx-auto text-sm">
+            <p className="text-muted-foreground max-w-lg text-sm text-center">
               Each module functions independently but achieves maximum value
               through the central intelligence fusion engine.
             </p>
           </motion.div>
 
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-3 text-left w-full">
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 md:gap-8 text-left w-full mt-8">
             {MODULES.map((mod, i) => (
               <motion.div
                 key={mod.name}
@@ -399,14 +398,20 @@ export default function LandingPage() {
                 whileInView={{ opacity: 1, y: 0 }}
                 viewport={{ once: true, margin: '-30px' }}
                 transition={{ duration: 0.4, delay: i * 0.06 }}
+                className="flex flex-col h-full"
               >
-                <Card className="group relative p-5 hover:border-gold/25 transition-all duration-500 cursor-default overflow-hidden h-full">
+                <Card className="group relative p-6 md:p-8 hover:border-gold/30 transition-all duration-500 cursor-default h-full w-full flex flex-col items-center justify-center text-center">
                   <div className="absolute top-0 left-0 right-0 h-px bg-gradient-to-r from-transparent via-transparent to-transparent group-hover:via-gold/30 transition-all duration-700" />
-                  <div className="w-8 h-8 rounded-lg flex items-center justify-center mb-3" style={{ backgroundColor: mod.accent + '15' }}>
-                    <mod.icon size={16} style={{ color: mod.accent }} />
+                  
+                  <div className="flex flex-col items-center justify-center w-full h-full">
+                    <div className="flex items-center gap-3 mb-3">
+                      <div className="w-10 h-10 rounded-lg flex items-center justify-center shrink-0" style={{ backgroundColor: mod.accent + '15' }}>
+                        <mod.icon size={20} style={{ color: mod.accent }} />
+                      </div>
+                      <h3 className="text-sm md:text-base font-bold tracking-[0.1em] uppercase text-foreground">{mod.name}</h3>
+                    </div>
+                    <p className="text-xs md:text-[13px] text-muted-foreground leading-relaxed text-center">{mod.desc}</p>
                   </div>
-                  <h3 className="text-xs font-bold tracking-[0.1em] mb-1.5">{mod.name}</h3>
-                  <p className="text-[11px] text-muted-foreground leading-relaxed">{mod.desc}</p>
                 </Card>
               </motion.div>
             ))}
@@ -415,22 +420,22 @@ export default function LandingPage() {
       </section>
 
       {/* ═══ STI SHOWCASE ═══════════════════════════════════════════ */}
-      <section className="py-24 px-6 md:px-12 lg:px-20 overflow-hidden relative w-full flex flex-col items-center justify-center">
+      <section className="py-40 md:py-56 px-6 md:px-12 lg:px-20 overflow-hidden relative w-full flex flex-col items-center justify-center bg-[linear-gradient(to_bottom,rgba(255,255,255,0.02)_0%,transparent_100%)] border-t border-white/5">
         <div className="absolute inset-0 pointer-events-none" style={{
-          background: 'radial-gradient(ellipse 50% 30% at 50% 50%, rgba(220,38,38,0.04) 0%, transparent 70%)'
+          background: 'radial-gradient(ellipse 70% 40% at 50% 50%, rgba(220,38,38,0.03) 0%, transparent 60%)'
         }} />
-        <div className="w-full max-w-6xl relative flex flex-col items-center">
+        <div className="w-full max-w-7xl relative flex flex-col items-center">
           <motion.div
             initial={{ opacity: 0, y: 30 }}
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true }}
             transition={{ duration: 0.5 }}
-            className="text-center mb-14"
+            className="w-full flex flex-col items-center justify-center text-center mb-16 md:mb-20"
           >
-            <h2 className="text-3xl md:text-5xl font-bold mb-4">
+            <h2 className="text-3xl md:text-5xl font-bold mb-6 text-center">
               Sectarianism <span className="text-gold">Tension Index</span>
             </h2>
-            <p className="text-muted-foreground max-w-xl mx-auto text-sm">
+            <p className="text-muted-foreground max-w-2xl text-base text-center leading-relaxed">
               The only real-time, multi-axis, quantified measure of sectarian dynamics in Iraq.
               No comparable instrument exists worldwide.
             </p>
@@ -441,38 +446,41 @@ export default function LandingPage() {
             whileInView={{ opacity: 1, scale: 1 }}
             viewport={{ once: true }}
             transition={{ duration: 0.7 }}
-            className="w-full"
+            className="w-full max-w-6xl"
           >
-            <Card className="relative p-8 overflow-hidden text-left">
+            <Card className="relative overflow-hidden text-left w-full shadow-lg">
               <BorderBeam size={250} duration={18} colorFrom="#DC2626" colorTo="#C9A84C" />
-              <div className="flex items-center justify-between mb-8">
-                <div>
-                  <div className="text-[10px] text-muted-foreground tracking-[0.2em] uppercase mb-2">
-                    Iraq · Composite Score · Real-Time
+              
+              {/* Enforced Internal Safe Area */}
+              <div className="relative z-10 p-8 md:p-14 w-full h-full flex flex-col">
+                <div className="flex flex-col md:flex-row items-start md:items-center justify-between mb-14 gap-8 flex-wrap pt-4 md:pt-2">
+                  <div className="flex-1">
+                    <div className="text-xs text-muted-foreground tracking-[0.2em] uppercase mb-4 font-medium">
+                      Iraq · Composite Score · Real-Time
+                    </div>
+                    <div className="flex items-end gap-5 flex-wrap">
+                      <span className="text-7xl md:text-[5.5rem] font-bold font-mono text-orange-400">65</span>
+                      <span className="text-2xl text-text-muted font-mono mb-2">/ 100</span>
+                      <Badge className="bg-orange-400/12 text-orange-400 border-orange-400/25 mb-4 px-4 py-1.5 text-xs shrink-0 self-center md:self-end">HIGH</Badge>
+                    </div>
                   </div>
-                  <div className="flex items-end gap-3">
-                    <span className="text-6xl font-bold font-mono text-orange-400">65</span>
-                    <span className="text-xl text-text-muted font-mono">/ 100</span>
-                    <Badge className="bg-orange-400/12 text-orange-400 border-orange-400/25 mb-1">HIGH</Badge>
+                  <div className="text-left md:text-right shrink-0 mt-4 md:mt-0 pt-2">
+                    <div className="text-xs text-muted-foreground mb-3 uppercase tracking-widest font-medium">Confidence</div>
+                    <div className="text-4xl font-mono text-gold">87%</div>
                   </div>
                 </div>
-                <div className="text-right">
-                  <div className="text-[10px] text-muted-foreground mb-1">Confidence</div>
-                  <div className="text-2xl font-mono text-gold">87%</div>
-                </div>
-              </div>
 
-              <div className="relative mb-8">
-                <div className="h-3 rounded-full sti-gradient opacity-80" />
+              <div className="relative mb-12">
+                <div className="h-4 rounded-full sti-gradient opacity-90 shadow-[0_0_20px_rgba(220,38,38,0.2)]" />
                 <motion.div
-                  className="absolute top-1/2 -translate-y-1/2 w-4 h-4 rounded-full bg-white border-2 border-orange-400 shadow-lg"
+                  className="absolute top-1/2 -translate-y-1/2 w-5 h-5 rounded-full bg-white border-4 border-orange-400 shadow-[0_0_15px_rgba(234,88,12,0.5)]"
                   style={{ left: '65%' }}
                   animate={{ scale: [1, 1.15, 1] }}
                   transition={{ duration: 2, repeat: Infinity }}
                 />
               </div>
 
-              <div className="grid grid-cols-2 md:grid-cols-3 gap-3">
+              <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6">
                 {[
                   { name: 'Sunni-Shia', score: 72, color: '#DC2626' },
                   { name: 'Arab-Kurd-Turkmen', score: 64, color: '#EA580C' },
@@ -481,12 +489,12 @@ export default function LandingPage() {
                   { name: 'Tribal', score: 38, color: '#4ADE80' },
                   { name: 'Minorities', score: 46, color: '#EAB308' },
                 ].map((axis) => (
-                  <div key={axis.name} className="p-3 rounded-lg bg-surface-elevated/40 border border-border/50">
-                    <div className="flex items-center justify-between mb-2">
-                      <span className="text-[11px] text-muted-foreground">{axis.name}</span>
-                      <span className="text-sm font-mono font-bold" style={{ color: axis.color }}>{axis.score}</span>
+                  <div key={axis.name} className="p-5 rounded-xl bg-surface-elevated/40 border border-border/50 hover:bg-surface-elevated/60 transition-colors">
+                    <div className="flex items-center justify-between mb-3">
+                      <span className="text-sm font-medium text-muted-foreground">{axis.name}</span>
+                      <span className="text-lg font-mono font-bold" style={{ color: axis.color }}>{axis.score}</span>
                     </div>
-                    <div className="h-1.5 bg-surface rounded-full overflow-hidden">
+                    <div className="h-2 bg-surface/80 rounded-full overflow-hidden shadow-inner">
                       <motion.div
                         className="h-full rounded-full"
                         style={{ backgroundColor: axis.color }}
@@ -499,14 +507,15 @@ export default function LandingPage() {
                   </div>
                 ))}
               </div>
+              </div>
             </Card>
           </motion.div>
         </div>
       </section>
 
       {/* ═══ RAPID STATS ═══════════════════════════════════════════ */}
-      <section className="py-20 px-6 md:px-12 lg:px-20 border-y border-border/40 bg-surface-elevated/30 w-full flex flex-col items-center">
-        <div className="w-full max-w-6xl grid grid-cols-2 md:grid-cols-4 gap-8 md:gap-4 divide-x-0 md:divide-x divide-border/40">
+      <section className="py-24 px-6 md:px-12 lg:px-20 border-y border-border/40 bg-surface-elevated/30 w-full flex flex-col items-center">
+        <div className="w-full max-w-7xl grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-10 md:gap-6">
             {STATS.map((stat, i) => (
               <motion.div
                 key={stat.label}
@@ -514,20 +523,22 @@ export default function LandingPage() {
                 whileInView={{ opacity: 1, y: 0 }}
                 viewport={{ once: true }}
                 transition={{ duration: 0.4, delay: i * 0.06 }}
-                className="text-center"
+                className="flex flex-col items-center justify-center w-full"
               >
-                <stat.icon size={16} className="text-gold mx-auto mb-2 opacity-60" />
-                <div className="text-xl md:text-2xl font-bold font-mono text-foreground">{stat.value}</div>
-                <div className="text-[10px] text-text-muted mt-0.5 tracking-wide uppercase">{stat.label}</div>
+                <div className="flex items-center gap-3 mb-2">
+                  <stat.icon size={24} className="text-gold opacity-90" />
+                  <div className="text-2xl md:text-3xl font-bold font-mono text-foreground">{stat.value}</div>
+                </div>
+                <div className="text-xs md:text-[11px] text-text-muted tracking-widest uppercase font-medium text-center">{stat.label}</div>
               </motion.div>
             ))}
           </div>
       </section>
 
       {/* ═══ VALUE PROPS ═════════════════════════════════════════ */}
-      <section className="py-24 px-6 md:px-12 lg:px-20 w-full flex flex-col items-center">
-        <div className="w-full max-w-5xl text-left">
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+      <section className="py-40 md:py-56 px-6 md:px-12 lg:px-20 w-full flex flex-col items-center bg-background">
+        <div className="w-full max-w-7xl">
+          <div className="grid grid-cols-1 lg:grid-cols-3 gap-10 md:gap-16 w-full">
             {[
               { icon: Target, title: 'MENA-First, Global-Capable', desc: 'Iraqi dialect, Kurdish political terminology, militia coded language — not translated, but comprehended.' },
               { icon: Lock, title: 'Ethical by Design', desc: 'Structural guardrails against misuse for surveillance, targeting of minorities, or civil society suppression.' },
@@ -539,11 +550,12 @@ export default function LandingPage() {
                 whileInView={{ opacity: 1, y: 0 }}
                 viewport={{ once: true }}
                 transition={{ duration: 0.4, delay: i * 0.1 }}
+                className="flex flex-col h-full w-full"
               >
-                <Card className="relative p-6 h-full hover:border-gold/20 transition-all duration-500 overflow-hidden">
-                  <prop.icon size={22} className="text-gold mb-4" />
-                  <h3 className="text-sm font-semibold mb-2">{prop.title}</h3>
-                  <p className="text-xs text-muted-foreground leading-relaxed">{prop.desc}</p>
+                <Card className="relative p-8 hover:border-gold/20 transition-all duration-500 flex flex-col justify-start text-center items-center h-full w-full">
+                  <prop.icon size={26} className="text-gold mb-6" />
+                  <h3 className="text-base font-semibold mb-3 w-full text-center">{prop.title}</h3>
+                  <p className="text-sm text-muted-foreground leading-relaxed w-full text-center">{prop.desc}</p>
                 </Card>
               </motion.div>
             ))}
@@ -570,18 +582,18 @@ export default function LandingPage() {
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true }}
             transition={{ duration: 0.5 }}
+            className="w-full flex flex-col items-center justify-center text-center"
           >
-            <h2 className="text-3xl md:text-4xl font-bold mb-4">
+            <h2 className="text-3xl md:text-4xl font-bold mb-4 w-full text-center">
               Ready to access the platform?
             </h2>
-            <p className="text-muted-foreground mb-8 max-w-md mx-auto text-sm">
+            <p className="text-muted-foreground mb-10 max-w-md text-sm text-center">
               MERIDIAN transforms open source noise into analytical signal. 
               Enter the intelligence environment.
             </p>
-            <Button variant="gold" size="lg" onClick={() => setMode('platform')} className="gold-glow mx-auto">
-              <Shield size={16} />
+            <Button variant="gold" size="lg" onClick={() => setMode('platform')} className="gold-glow group flex items-center gap-2">
               Launch MERIDIAN
-              <ArrowRight size={16} />
+              <ArrowRight size={16} className="group-hover:translate-x-1.5 transition-transform" />
             </Button>
           </motion.div>
 
