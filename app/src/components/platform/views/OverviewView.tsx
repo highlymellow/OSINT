@@ -12,7 +12,7 @@ import {
   Activity, TrendingUp, TrendingDown, Minus, AlertTriangle,
   Shield, Radio, MapPin, Network, Eye, BarChart3, Radar, Layers,
   ChevronRight, Zap, CheckCircle, FileText, Clock, Target,
-  Users, Globe, Newspaper
+  Users, Globe, Newspaper, Search, Bell
 } from 'lucide-react'
 import type { NavView } from '@/lib/types'
 import { ResponsiveContainer, AreaChart, Area, XAxis, YAxis, Tooltip } from 'recharts'
@@ -49,99 +49,114 @@ export default function OverviewView() {
   const trendColor = sti?.trend === 'up' ? 'text-red-400' : sti?.trend === 'down' ? 'text-green-400' : 'text-yellow-400'
 
   return (
-    <div className="p-5 space-y-4 animate-fade-in">
+    <div className="p-8 space-y-8 animate-fade-in pb-20">
       {/* ── Welcome Header ── */}
-      <div className="flex items-center justify-between mb-1">
+      <div className="flex items-center justify-between">
         <div>
-          <h2 className="text-lg font-semibold">Welcome back, Mohammed</h2>
-          <p className="text-xs text-muted-foreground">
-            Iraq intelligence overview · {new Date().toLocaleDateString('en-US', { weekday: 'long', month: 'long', day: 'numeric', year: 'numeric' })}
+          <h2 className="text-2xl font-bold tracking-tight text-white mb-2">Dashboard</h2>
+          <p className="text-sm text-white/50">
+            Welcome back, Mohammed. Here's your intelligence overview today.
           </p>
         </div>
         <div className="flex items-center gap-2">
-          <Button variant="outline" size="sm" onClick={() => setView('signal')}>
-            <Radio size={13} />
+          {/* Notification Action Icons */}
+          <div className="flex bg-[#111113] border border-white/5 p-1 rounded-xl mr-2">
+			      <Button variant="ghost" size="icon" className="h-8 w-8 text-white/60 hover:text-white rounded-lg">
+              <Search size={16} />
+            </Button>
+            <Button variant="ghost" size="icon" className="h-8 w-8 text-white/60 hover:text-white rounded-lg relative">
+              <Bell size={16} />
+              <span className="absolute top-2 right-2.5 w-1.5 h-1.5 bg-red-500 rounded-full"></span>
+            </Button>
+          </div>
+          <Button className="bg-[#111113] hover:bg-white/10 text-white border border-white/5 h-10 px-4 rounded-xl gap-2 font-medium">
+            <Radio size={14} className="text-white/60" />
             Live Feed
           </Button>
-          <Button variant="gold" size="sm" onClick={() => setView('press' as NavView)}>
-            <FileText size={13} />
+          <Button className="bg-white hover:bg-zinc-200 text-black h-10 px-4 rounded-xl gap-2 font-medium">
+            <FileText size={14} className="text-black/60" />
             Daily Brief
           </Button>
         </div>
       </div>
 
-      {/* ── KPI Row ── */}
-      <div className="grid grid-cols-2 md:grid-cols-4 gap-3 mb-6">
+      {/* ── Dashboard KPI Row ── */}
+      <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-6">
         {/* STI Score KPI */}
         <motion.div initial={{ opacity: 0, y: 8 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0 }}>
-          <Card className="relative overflow-hidden group hover:border-white/10 transition-all duration-300 bg-surface/50">
-            <BorderBeam size={120} duration={20} delay={0} />
-            <div className="p-4">
-              <div className="flex items-center justify-between mb-3">
-                <div className="flex items-center gap-2">
-                  <Activity size={14} className="text-muted-foreground" />
-                  <span className="text-[10px] text-muted-foreground font-bold uppercase tracking-widest">STI Score</span>
-                </div>
-                <TrendIcon size={14} className={trendColor} />
+          <Card className="rounded-2xl border-white/5 bg-[#111113] p-5 h-[130px] flex flex-col justify-between shadow-sm relative overflow-hidden">
+            <div className="flex items-start justify-between absolute inset-x-5 top-5">
+              <span className="text-[13px] text-white/50 font-medium">Tension Score</span>
+              <div className="p-2 rounded-lg bg-[#18181b] border border-white/5 shrink-0">
+                <Activity size={16} className="text-red-500" />
               </div>
-              <div className="flex items-end gap-1.5 mb-2">
-                <span className={`text-4xl font-bold font-mono leading-none ${getHeatColor(sti?.composite ?? 0)}`}>{sti?.composite ?? '—'}</span>
-                <span className="text-sm text-muted-foreground font-mono mb-1">/ 100</span>
+            </div>
+            
+            <div className="absolute inset-x-5 bottom-5">
+              <div className="flex items-end gap-1 mb-1">
+                <span className={`text-[32px] font-bold tracking-tight leading-none ${getHeatColor(sti?.composite ?? 0)}`}>{sti?.composite ?? '—'}</span>
+                <span className="text-sm font-medium text-white/30 pb-0.5">/100</span>
               </div>
-              <div className="flex items-center gap-2">
-                <Badge className={`${getStatusBg(sti?.status ?? '')} ${getStatusColor(sti?.status ?? '')} text-[9px] font-bold tracking-widest px-2 py-0.5 uppercase`}>
-                  {sti?.status ?? '—'}
-                </Badge>
-                <span className="text-xs font-mono font-medium text-muted-foreground">
-                  {sti && sti.composite > sti.previousComposite ? '+' : ''}{sti ? sti.composite - sti.previousComposite : 0}
-                </span>
-              </div>
+              <span className="text-xs text-red-500 font-medium tracking-wide">
+                +3 from last week
+              </span>
             </div>
           </Card>
         </motion.div>
 
         {/* Events Today */}
         <motion.div initial={{ opacity: 0, y: 8 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.05 }}>
-          <Card className="p-4 hover:border-white/10 transition-all bg-surface/50 h-full flex flex-col justify-between">
-            <div className="flex items-center gap-2 mb-3">
-              <Zap size={14} className="text-muted-foreground" />
-              <span className="text-[10px] text-muted-foreground font-bold uppercase tracking-widest">Active Events</span>
+          <Card className="rounded-2xl border-white/5 bg-[#111113] p-5 h-[130px] flex flex-col justify-between shadow-sm relative overflow-hidden">
+            <div className="flex items-start justify-between absolute inset-x-5 top-5">
+              <span className="text-[13px] text-white/50 font-medium">Active Events</span>
+              <div className="p-2 rounded-lg bg-[#18181b] border border-white/5 shrink-0">
+                <Zap size={16} className="text-teal-500" />
+              </div>
             </div>
-            <div className={`text-4xl font-bold font-mono leading-none mb-2 ${getHeatColor(events?.length ?? 0, 20)}`}>{events?.length ?? 0}</div>
-            <div className="flex items-center gap-1.5 opacity-80">
-              <span className="text-[10px] text-red-500 font-medium">{events?.filter(e => e.severity === 'critical').length ?? 0} critical</span>
-              <span className="text-[10px] text-muted-foreground">·</span>
-              <span className="text-[10px] text-orange-400 font-medium">{events?.filter(e => e.severity === 'high').length ?? 0} high</span>
+            
+            <div className="absolute inset-x-5 bottom-5">
+              <div className="text-[32px] font-bold tracking-tight text-white leading-none mb-1">{events?.length ?? 0}</div>
+              <span className="text-xs text-teal-500 font-medium tracking-wide">
+                +8% from yesterday
+              </span>
             </div>
           </Card>
         </motion.div>
 
         {/* Actors */}
         <motion.div initial={{ opacity: 0, y: 8 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.1 }}>
-          <Card className="p-4 hover:border-white/10 transition-all bg-surface/50 h-full flex flex-col justify-between">
-            <div className="flex items-center gap-2 mb-3">
-              <Users size={14} className="text-muted-foreground" />
-              <span className="text-[10px] text-muted-foreground font-bold uppercase tracking-widest">Tracked Actors</span>
+          <Card className="rounded-2xl border-white/5 bg-[#111113] p-5 h-[130px] flex flex-col justify-between shadow-sm relative overflow-hidden">
+            <div className="flex items-start justify-between absolute inset-x-5 top-5">
+              <span className="text-[13px] text-white/50 font-medium">Tracked Actors</span>
+              <div className="p-2 rounded-lg bg-[#18181b] border border-white/5 shrink-0">
+                <Users size={16} className="text-purple-500" />
+              </div>
             </div>
-            <div className={`text-4xl font-bold font-mono leading-none mb-2 ${getHeatColor(27, 50)}`}>27</div>
-            <div className="flex items-center gap-1.5 opacity-80">
-              <span className="text-[10px] text-red-500 font-medium">5 critical</span>
-              <span className="text-[10px] text-muted-foreground">·</span>
-              <span className="text-[10px] text-muted-foreground font-medium">40 connections</span>
+            
+            <div className="absolute inset-x-5 bottom-5">
+              <div className="text-[32px] font-bold tracking-tight text-white leading-none mb-1">27</div>
+              <span className="text-xs text-purple-500 font-medium tracking-wide">
+                40 connections mapped
+              </span>
             </div>
           </Card>
         </motion.div>
 
         {/* Confidence */}
         <motion.div initial={{ opacity: 0, y: 8 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.15 }}>
-          <Card className="p-4 hover:border-white/10 transition-all bg-surface/50 h-full flex flex-col justify-between">
-            <div className="flex items-center gap-2 mb-3">
-              <Target size={14} className="text-muted-foreground" />
-              <span className="text-[10px] text-muted-foreground font-bold uppercase tracking-widest">Confidence</span>
+           <Card className="rounded-2xl border-white/5 bg-[#111113] p-5 h-[130px] flex flex-col justify-between shadow-sm relative overflow-hidden">
+            <div className="flex items-start justify-between absolute inset-x-5 top-5">
+              <span className="text-[13px] text-white/50 font-medium">Data Confidence</span>
+              <div className="p-2 rounded-lg bg-[#18181b] border border-white/5 shrink-0">
+                <Target size={16} className="text-orange-500" />
+              </div>
             </div>
-            <div className={`text-4xl font-bold font-mono leading-none mb-2 ${getHeatColor((sti?.confidence ?? 0) * 100)}`}>{sti ? `${Math.round(sti.confidence * 100)}%` : '—'}</div>
-            <div className="flex items-center gap-1.5 opacity-80">
-              <span className="text-[10px] text-muted-foreground font-medium">{sti?.axes.reduce((s, a) => s + a.signals, 0).toLocaleString()} signals</span>
+            
+            <div className="absolute inset-x-5 bottom-5">
+              <div className="text-[32px] font-bold tracking-tight text-white leading-none mb-1">{sti ? `${Math.round(sti.confidence * 100)}%` : '—'}</div>
+              <span className="text-xs text-orange-500 font-medium tracking-wide">
+                {sti?.axes.reduce((s, a) => s + a.signals, 0).toLocaleString()} signals
+              </span>
             </div>
           </Card>
         </motion.div>

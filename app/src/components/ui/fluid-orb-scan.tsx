@@ -142,7 +142,7 @@ const Scene = () => {
     const material = new THREE.MeshBasicNodeMaterial({
       colorNode: final,
       transparent: true,
-      opacity: 0,
+      opacity: 1, // Start fully visible
     });
 
     return {
@@ -157,23 +157,15 @@ const Scene = () => {
   const [w, h] = useAspect(WIDTH, HEIGHT);
 
   useFrame(({ clock }) => {
-    uniforms.uProgress.value = (Math.sin(clock.getElapsedTime() * 0.5) * 0.5 + 0.5);
-    // Плавное появление
-    if (meshRef.current && 'material' in meshRef.current && meshRef.current.material) {
-      const mat = meshRef.current.material as any;
-      if ('opacity' in mat) {
-        // @ts-ignore
-        mat.opacity = THREE.MathUtils.lerp(
-          mat.opacity,
-          visible ? 1 : 0,
-          0.07
-        );
-      }
-    }
-  });
-
-  useFrame(({ pointer }) => {
-    uniforms.uPointer.value = pointer;
+    const time = clock.getElapsedTime();
+    uniforms.uProgress.value = (Math.sin(time * 0.5) * 0.5 + 0.5);
+    
+    // Auto-animate pointer to create continuous fluid morphing motion!
+    // @ts-ignore
+    uniforms.uPointer.value.set(
+      Math.sin(time * 0.8) * 8.0, 
+      Math.cos(time * 1.2) * 8.0
+    );
   });
 
   const scaleFactor = 0.40;
@@ -199,11 +191,6 @@ export const FluidOrbScan = () => {
         <PostProcessing fullScreenEffect={true} />
         <Scene />
       </Canvas>
-      <div className="absolute inset-0 flex items-center justify-center pointer-events-none z-[201]">
-         <div className="font-mono text-red-500 text-2xl tracking-[0.5em] font-bold drop-shadow-[0_0_10px_rgba(239,68,68,1)] animate-pulse">
-           ESTABLISHING LINK...
-         </div>
-      </div>
     </div>
   );
 };

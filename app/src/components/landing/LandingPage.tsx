@@ -70,7 +70,7 @@ export default function LandingPage() {
     setIsLaunching(true)
     setTimeout(() => {
       setMode('platform')
-    }, 2800) // Extended delay to let the Fluid Orb play its scan sequence
+    }, 3800) // Extended delay to let the Fluid Orb play its scan sequence
   }
 
   return (
@@ -82,6 +82,7 @@ export default function LandingPage() {
           <motion.div
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
+            transition={{ duration: 0.8, ease: "easeOut" }}
             className="fixed inset-0 z-[100] bg-black"
           >
             {/* The exact fluid orb WebGPU scan sequence provided by the User */}
@@ -124,7 +125,7 @@ export default function LandingPage() {
           transition={{ duration: 10, repeat: Infinity, ease: 'linear' }}
         />
 
-        <div className="relative z-20 w-full h-full pointer-events-none">
+        <div className="absolute inset-0 z-20 pointer-events-none">
           <AnimatePresence>
             {revealed && (
               <>
@@ -195,13 +196,14 @@ export default function LandingPage() {
                   </div>
                 </motion.div>
 
+                {/* Top Center Title - Sandwiched ABOVE the Orb */}
                 <motion.div
                   initial={{ opacity: 0, scale: 0.95 }}
                   animate={{ opacity: 1, scale: 1 }}
                   transition={{ duration: 0.7, delay: 0.25 }}
-                  className="absolute top-[18%] md:top-[12%] left-0 right-0 text-center flex flex-col items-center justify-center pointer-events-none"
+                  className="absolute top-[8%] left-0 right-0 text-center flex flex-col items-center justify-center pointer-events-none"
                 >
-                  <h1 className="text-[12vw] sm:text-[13vw] leading-[0.8] font-black tracking-[-0.04em] text-white mix-blend-overlay opacity-30 md:opacity-40 blur-[0.5px]">
+                  <h1 className="text-6xl sm:text-7xl md:text-8xl lg:text-[140px] leading-[0.8] font-black tracking-[-0.04em] text-white opacity-80 blur-[0.5px]">
                     MERIDIAN
                   </h1>
                 </motion.div>
