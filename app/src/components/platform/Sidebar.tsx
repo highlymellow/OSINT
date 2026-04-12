@@ -65,7 +65,7 @@ export default function Sidebar() {
       </div>
 
       {/* Navigation */}
-      <nav className="flex-1 py-4 px-3 overflow-y-auto space-y-1.5">
+      <nav className="flex-1 py-6 px-4 overflow-y-auto space-y-3">
         {NAV_ITEMS.map((item) => {
           const isActive = currentView === item.id
           return (
@@ -73,24 +73,24 @@ export default function Sidebar() {
               key={item.id}
               onClick={() => setView(item.id)}
               className={cn(
-                "w-full flex items-center gap-3 px-3.5 py-3 rounded-xl text-sm transition-all duration-200 relative group",
+                "w-full flex items-center gap-4 px-4 py-3.5 rounded-2xl text-[15px] transition-all duration-200 relative group",
                 isActive
-                  ? "bg-white/10 text-white font-medium shadow-[0_4px_12px_rgba(0,0,0,0.1)]"
-                  : "text-white/60 hover:bg-white/5 hover:text-white"
+                  ? "bg-[#18181b] text-white font-semibold shadow-lg border border-white/5"
+                  : "text-white/50 hover:bg-white/5 hover:text-white font-medium"
               )}
             >
               <item.icon
-                size={18}
+                size={20}
                 className={cn(
                   "shrink-0 transition-colors",
-                  isActive ? "text-white" : "text-white/50 group-hover:text-white/80"
+                  isActive ? "text-white" : "text-white/40 group-hover:text-white/80"
                 )}
               />
               {!collapsed && (
                 <div className="flex items-center justify-between flex-1">
                   <span>{item.label}</span>
                   {item.status === 'beta' && (
-                    <span className="text-[9px] font-bold tracking-wider uppercase text-zinc-500 bg-white/5 border border-white/10 px-1.5 py-0.5 rounded-md">
+                    <span className="text-[10px] font-bold tracking-wider uppercase text-zinc-500 bg-white/5 border border-white/10 px-2 py-0.5 rounded-md">
                       BETA
                     </span>
                   )}
@@ -100,8 +100,8 @@ export default function Sidebar() {
           )
         })}
 
-        <div className="pt-6 pb-2 px-4">
-          {!collapsed && <div className="text-[10px] font-semibold text-white/30 uppercase tracking-wider mb-2">System</div>}
+        <div className="pt-8 pb-3 px-4">
+          <div className="w-full h-px bg-white/5" />
         </div>
 
         {BOTTOM_ITEMS.map((item) => {
@@ -111,17 +111,17 @@ export default function Sidebar() {
               key={item.id}
               onClick={() => setView(item.id)}
               className={cn(
-                "w-full flex items-center gap-3 px-3.5 py-3 rounded-xl text-sm transition-all duration-200 group",
+                "w-full flex items-center gap-4 px-4 py-3.5 rounded-2xl text-[15px] transition-all duration-200 group",
                 isActive
-                  ? "bg-white/10 text-white font-medium"
-                  : "text-white/60 hover:bg-white/5 hover:text-white"
+                  ? "bg-[#18181b] text-white font-semibold shadow-lg border border-white/5"
+                  : "text-white/50 hover:bg-white/5 hover:text-white font-medium"
               )}
             >
               <item.icon
-                size={18}
+                size={20}
                 className={cn(
                   "shrink-0 transition-colors",
-                  isActive ? "text-white" : "text-white/50 group-hover:text-white/80"
+                  isActive ? "text-white" : "text-white/40 group-hover:text-white/80"
                 )}
               />
               {!collapsed && <span>{item.label}</span>}

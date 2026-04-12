@@ -1,9 +1,17 @@
-import { useState, useEffect, useRef } from 'react'
+import { useState } from 'react'
 import { motion } from 'motion/react'
 import {
-  Layers, Crosshair, Activity, Thermometer, Radar,
-  Play, Pause, MapPin
+  Layers, Crosshair, Radio, Radar,
+  Play, Pause
 } from 'lucide-react'
+import {
+  Map,
+  MapMarker,
+  MarkerContent,
+  MapRoute,
+  MarkerLabel,
+} from "@/components/ui/map"
+import { Badge } from '@/components/ui/badge'
 
 const layerGroups = [
   {
@@ -29,24 +37,21 @@ const layerGroups = [
   }
 ]
 
-// Simulated conflict points
+// Simulated conflict points and dynamic nodes
 const CONFLICT_POINTS = [
-  { lat: 33.3, lng: 44.4, label: 'Baghdad — PMF Budget Dispute', severity: 'high' },
-  { lat: 36.34, lng: 43.13, label: 'Mosul — Shabak Protests', severity: 'medium' },
-  { lat: 35.47, lng: 44.39, label: 'Kirkuk — Property Seizures', severity: 'critical' },
-  { lat: 34.55, lng: 43.68, label: 'Makhmur — Peshmerga-ISF Standoff', severity: 'critical' },
-  { lat: 36.41, lng: 41.87, label: 'Sinjar — Yazidi Return Blocked', severity: 'high' },
-  { lat: 31.99, lng: 44.37, label: 'Dhi Qar — Marshland Drought', severity: 'medium' },
-  { lat: 30.51, lng: 47.78, label: 'Basra — Mandaean Harassment', severity: 'medium' },
+  { lat: 33.3, lng: 44.4, label: 'Baghdad — High Alert', severity: 'critical', color: '#DC2626' },
+  { lat: 36.34, lng: 43.13, label: 'Mosul — Safe Zone', severity: 'low', color: '#22c55e' },
+  { lat: 35.47, lng: 44.39, label: 'Kirkuk — Dynamic Escalation', severity: 'critical', color: '#DC2626' },
+  { lat: 34.55, lng: 43.68, label: 'Makhmur — Journalist Caution', severity: 'high', color: '#f59e0b' },
+  { lat: 36.41, lng: 41.87, label: 'Sinjar — Corridor Open', severity: 'medium', color: '#3b82f6' },
+  { lat: 31.99, lng: 44.37, label: 'Dhi Qar — Checkpoint', severity: 'medium', color: '#eab308' },
+  { lat: 30.51, lng: 47.78, label: 'Basra — Secure Transit', severity: 'low', color: '#22c55e' },
 ]
 
 export default function TerrainView() {
   const [activeLayers, setActiveLayers] = useState<string[]>(['acled'])
-  const mapRef = useRef<HTMLDivElement>(null)
-  const leafletMapRef = useRef<any>(null)
   const [timelineVal, setTimelineVal] = useState(100)
   const [isPlaying, setIsPlaying] = useState(false)
-  const [mapReady, setMapReady] = useState(false)
 
   const toggleLayer = (id: string) => {
     setActiveLayers(prev =>
@@ -54,112 +59,68 @@ export default function TerrainView() {
     )
   }
 
-  // Load Leaflet
-  useEffect(() => {
-    // Check if L is already available globally
-    if ((window as any).L) {
-      setMapReady(true)
-      return
-    }
-
-    // Add CSS if not present
-    if (!document.querySelector('link[href*="leaflet"]')) {
-      const css = document.createElement('link')
-      css.rel = 'stylesheet'
-      css.href = 'https://unpkg.com/leaflet@1.9.4/dist/leaflet.css'
-      document.head.appendChild(css)
-    }
-
-    // Add JS if not present
-    if (!document.querySelector('script[src*="leaflet"]')) {
-      const script = document.createElement('script')
-      script.src = 'https://unpkg.com/leaflet@1.9.4/dist/leaflet.js'
-      script.onload = () => setMapReady(true)
-      document.head.appendChild(script)
-    } else {
-      // Script tag exists but L not ready yet, poll for it
-      const poll = setInterval(() => {
-        if ((window as any).L) {
-          clearInterval(poll)
-          setMapReady(true)
-        }
-      }, 100)
-      return () => clearInterval(poll)
-    }
-  }, [])
-
-  // Init map
-  useEffect(() => {
-    if (!mapReady || !mapRef.current) return
-    const L = (window as any).L
-    if (!L || leafletMapRef.current) return
-
-    leafletMapRef.current = L.map(mapRef.current, {
-      zoomControl: false,
-      attributionControl: false
-    }).setView([33.3, 44.4], 6)
-
-    L.tileLayer('https://{s}.basemaps.cartocdn.com/dark_nolabels/{z}/{x}/{y}{r}.png', {
-      maxZoom: 18
-    }).addTo(leafletMapRef.current)
-
-    L.control.zoom({ position: 'topright' }).addTo(leafletMapRef.current)
-
-    // Fix container sizing
-    setTimeout(() => {
-      leafletMapRef.current?.invalidateSize()
-    }, 300)
-
-    return () => {
-      if (leafletMapRef.current) {
-        leafletMapRef.current.remove()
-        leafletMapRef.current = null
-      }
-    }
-  }, [mapReady])
-
-  // Sync layers
-  useEffect(() => {
-    const L = (window as any).L
-    if (!leafletMapRef.current || !L) return
-
-    if ((leafletMapRef.current as any)._customGroup) {
-      leafletMapRef.current.removeLayer((leafletMapRef.current as any)._customGroup)
-    }
-
-    const group = L.layerGroup();
-    (leafletMapRef.current as any)._customGroup = group
-
-    if (activeLayers.includes('acled')) {
-      CONFLICT_POINTS.forEach((pt) => {
-        const color = pt.severity === 'critical' ? '#DC2626' : pt.severity === 'high' ? '#EA580C' : '#EAB308'
-        const radius = pt.severity === 'critical' ? 12 : pt.severity === 'high' ? 9 : 6
-        L.circleMarker([pt.lat, pt.lng], {
-          color, fillColor: color, fillOpacity: 0.4, radius, weight: 1.5
-        }).bindPopup(`<div style="font-family:Inter;font-size:12px;"><strong>${pt.label}</strong><br/><span style="text-transform:uppercase;font-size:10px;color:${color}">${pt.severity}</span></div>`)
-          .addTo(group)
-      })
-    }
-
-    if (activeLayers.includes('pmf')) {
-      [[32.0, 45.4], [31.0, 46.0], [33.8, 44.8]].forEach(([lat, lng]) => {
-        L.circleMarker([lat, lng], { color: '#D4A843', fillColor: '#D4A843', fillOpacity: 0.5, radius: 8, weight: 1 }).addTo(group)
-      })
-    }
-
-    if (activeLayers.includes('oil')) {
-      [[30.5, 47.7], [35.4, 44.3], [36.2, 44.0]].forEach(([lat, lng]) => {
-        L.circleMarker([lat, lng], { color: '#C9A84C', fillColor: '#C9A84C', fillOpacity: 0.7, radius: 6, weight: 1 }).addTo(group)
-      })
-    }
-
-    group.addTo(leafletMapRef.current)
-  }, [activeLayers, mapReady])
-
   return (
     <div className="relative w-full h-full animate-fade-in bg-deep-black">
-      {/* Map container */}
-      <div ref={mapRef} className="absolute inset-0 w-full h-full z-0" style={{ filter: 'contrast(1.1) brightness(1.05)' }} />
+      {/* Dynamic Warning Header */}
+      <div className="absolute top-4 left-1/2 -translate-x-1/2 z-50 flex items-center gap-4">
+        <div className="glass-card px-4 py-2 rounded-full flex items-center gap-3 shadow-lg">
+          <Radio size={14} className="text-red-500 animate-pulse" />
+          <span className="text-[11px] uppercase tracking-widest font-bold text-white">Live Journalist Security Spectrum</span>
+        </div>
+      </div>
+
+      {/* Map Content */}
+      <div className="absolute inset-0 z-0">
+        <Map
+          center={[44.4, 33.3]}
+          zoom={5.5}
+          pitch={45}
+        >
+          {activeLayers.includes('acled') && CONFLICT_POINTS.map((pt, idx) => (
+            <MapMarker key={idx} longitude={pt.lng} latitude={pt.lat}>
+              <MarkerContent>
+                <div
+                  className="size-4 rounded-full border-2 border-white/20 shadow-[0_0_20px_rgba(0,0,0,0.5)] animate-pulse"
+                  style={{ backgroundColor: pt.color, boxShadow: `0 0 20px ${pt.color}` }}
+                />
+                <MarkerLabel position="top" className="bg-black/90 px-2 py-1 rounded text-white border border-white/10 backdrop-blur-sm mt-1">
+                  {pt.label}
+                </MarkerLabel>
+              </MarkerContent>
+            </MapMarker>
+          ))}
+
+          {/* Dynamic Simulated Roads/Vectors leading to conflict zones */}
+          {activeLayers.includes('pmf') && (
+            <>
+               <MapRoute coordinates={[[44.4, 33.3], [43.13, 36.34]]} color="#3b82f6" width={3} />
+               <MapRoute coordinates={[[44.4, 33.3], [47.78, 30.51]]} color="#22c55e" width={3} />
+               <MapRoute coordinates={[[44.4, 33.3], [44.39, 35.47]]} color="#DC2626" width={4} dashArray={[2, 2]} />
+            </>
+          )}
+        </Map>
+      </div>
+
+      {/* Legend overlays */}
+      <div className="absolute bottom-6 right-6 z-20 flex flex-col gap-2 pointer-events-none">
+        <div className="bg-black/60 backdrop-blur-md p-3 rounded-lg border border-white/10 w-48">
+          <h4 className="text-[10px] uppercase font-bold text-white/50 mb-2 border-b border-white/10 pb-1">Safety Index</h4>
+          <div className="space-y-2">
+            <div className="flex items-center gap-2 text-xs text-white">
+              <span className="w-2.5 h-2.5 rounded-full bg-green-500 shadow-[0_0_8px_rgba(34,197,94,0.6)]"></span> Secure Corridor
+            </div>
+            <div className="flex items-center gap-2 text-xs text-white">
+              <span className="w-2.5 h-2.5 rounded-full bg-blue-500 shadow-[0_0_8px_rgba(59,130,246,0.6)]"></span> Verified Node
+            </div>
+            <div className="flex items-center gap-2 text-xs text-white">
+              <span className="w-2.5 h-2.5 rounded-full bg-yellow-500 shadow-[0_0_8px_rgba(234,179,8,0.6)]"></span> Checkpoint C1
+            </div>
+            <div className="flex items-center gap-2 text-xs text-white">
+              <span className="w-2.5 h-2.5 rounded-full bg-red-500 shadow-[0_0_8px_rgba(220,38,38,0.6)] animate-pulse"></span> Hostile Zone
+            </div>
+          </div>
+        </div>
+      </div>
 
       {/* Layer control panel */}
       <div className="absolute top-4 left-4 w-72 z-50">
@@ -186,7 +147,7 @@ export default function TerrainView() {
                         }`}
                       >
                         <div className="flex items-center gap-2">
-                          <div className="w-2 h-2 rounded-full" style={{ backgroundColor: isActive ? layer.color : '#4B5563' }} />
+                           <div className="w-2 h-2 rounded-full" style={{ backgroundColor: isActive ? layer.color : '#4B5563' }} />
                           <span className={`text-[11px] font-medium ${isActive ? 'text-white' : 'text-text-secondary'}`}>
                             {layer.name}
                           </span>
@@ -220,46 +181,6 @@ export default function TerrainView() {
           </div>
         </div>
       </div>
-
-      {/* Satellite timeline */}
-      {activeLayers.includes('satellite') && (
-        <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          className="absolute bottom-8 left-1/2 -translate-x-1/2 w-[700px] z-50"
-        >
-          <div className="glass-card p-4">
-            <div className="flex items-center gap-2 mb-3">
-              <Radar size={14} className="text-gold" />
-              <span className="text-[11px] font-medium text-white">Satellite Change Detection Matrix</span>
-            </div>
-            <div className="flex items-center gap-3">
-              <button
-                onClick={() => setIsPlaying(!isPlaying)}
-                className="w-8 h-8 rounded-full bg-surface-hover flex items-center justify-center text-gold hover:bg-gold hover:text-black transition-all"
-              >
-                {isPlaying ? <Pause size={14} /> : <Play size={14} className="ml-0.5" />}
-              </button>
-              <div className="flex-1">
-                <input
-                  type="range"
-                  min="0" max="100"
-                  value={timelineVal}
-                  onChange={(e) => setTimelineVal(Number(e.target.value))}
-                  className="w-full h-1 bg-surface-hover rounded-full appearance-none outline-none cursor-pointer"
-                  style={{
-                    background: `linear-gradient(to right, #C9A84C ${timelineVal}%, #2A2A30 ${timelineVal}%)`
-                  }}
-                />
-                <div className="flex justify-between text-[9px] text-text-muted mt-1">
-                  <span>6 months prior</span>
-                  <span className="text-gold">Today</span>
-                </div>
-              </div>
-            </div>
-          </div>
-        </motion.div>
-      )}
 
       {/* Center crosshair */}
       <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 pointer-events-none z-40 opacity-15">
