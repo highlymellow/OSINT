@@ -17,6 +17,7 @@ import {
 import type { NavView } from '@/lib/types'
 import { ResponsiveContainer, AreaChart, Area, XAxis, YAxis, Tooltip } from 'recharts'
 import { fetchSTIHistory } from '@/lib/api'
+import IncidentReportCard from '@/components/ui/area-chart-1'
 
 const MODULE_ICONS: Record<string, React.ComponentType<any>> = {
   signal: Radio, terrain: MapPin, nexus: Network, lens: Eye,
@@ -80,11 +81,11 @@ export default function OverviewView() {
         </div>
       </div>
 
-      {/* ── Dashboard KPI Row ── */}
+      {/* Dashboard KPI Row */}
       <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-6">
         {/* STI Score KPI */}
         <motion.div initial={{ opacity: 0, y: 8 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0 }}>
-          <Card className="rounded-2xl border-white/5 bg-[#111113] p-5 h-[130px] flex flex-col justify-between shadow-sm relative overflow-hidden">
+          <Card className="rounded-2xl border-white/5 bg-[#111113] p-5 h-[130px] flex flex-col justify-between shadow-[11px_21px_3px_rgba(0,0,0,0.06),14px_27px_7px_rgba(0,0,0,0.10),19px_38px_14px_rgba(0,0,0,0.13),27px_54px_27px_rgba(0,0,0,0.16)] relative overflow-hidden">
             <div className="flex items-start justify-between absolute inset-x-5 top-5">
               <span className="text-[13px] text-white/50 font-medium">Tension Score</span>
               <div className="p-2 rounded-lg bg-[#18181b] border border-white/5 shrink-0">
@@ -106,7 +107,7 @@ export default function OverviewView() {
 
         {/* Events Today */}
         <motion.div initial={{ opacity: 0, y: 8 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.05 }}>
-          <Card className="rounded-2xl border-white/5 bg-[#111113] p-5 h-[130px] flex flex-col justify-between shadow-sm relative overflow-hidden">
+          <Card className="rounded-2xl border-white/5 bg-[#111113] p-5 h-[130px] flex flex-col justify-between shadow-[11px_21px_3px_rgba(0,0,0,0.06),14px_27px_7px_rgba(0,0,0,0.10),19px_38px_14px_rgba(0,0,0,0.13),27px_54px_27px_rgba(0,0,0,0.16)] relative overflow-hidden">
             <div className="flex items-start justify-between absolute inset-x-5 top-5">
               <span className="text-[13px] text-white/50 font-medium">Active Events</span>
               <div className="p-2 rounded-lg bg-[#18181b] border border-white/5 shrink-0">
@@ -125,7 +126,7 @@ export default function OverviewView() {
 
         {/* Actors */}
         <motion.div initial={{ opacity: 0, y: 8 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.1 }}>
-          <Card className="rounded-2xl border-white/5 bg-[#111113] p-5 h-[130px] flex flex-col justify-between shadow-sm relative overflow-hidden">
+          <Card className="rounded-2xl border-white/5 bg-[#111113] p-5 h-[130px] flex flex-col justify-between shadow-[11px_21px_3px_rgba(0,0,0,0.06),14px_27px_7px_rgba(0,0,0,0.10),19px_38px_14px_rgba(0,0,0,0.13),27px_54px_27px_rgba(0,0,0,0.16)] relative overflow-hidden">
             <div className="flex items-start justify-between absolute inset-x-5 top-5">
               <span className="text-[13px] text-white/50 font-medium">Tracked Actors</span>
               <div className="p-2 rounded-lg bg-[#18181b] border border-white/5 shrink-0">
@@ -144,7 +145,7 @@ export default function OverviewView() {
 
         {/* Confidence */}
         <motion.div initial={{ opacity: 0, y: 8 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.15 }}>
-           <Card className="rounded-2xl border-white/5 bg-[#111113] p-5 h-[130px] flex flex-col justify-between shadow-sm relative overflow-hidden">
+           <Card className="rounded-2xl border-white/5 bg-[#111113] p-5 h-[130px] flex flex-col justify-between shadow-[11px_21px_3px_rgba(0,0,0,0.06),14px_27px_7px_rgba(0,0,0,0.10),19px_38px_14px_rgba(0,0,0,0.13),27px_54px_27px_rgba(0,0,0,0.16)] relative overflow-hidden">
             <div className="flex items-start justify-between absolute inset-x-5 top-5">
               <span className="text-[13px] text-white/50 font-medium">Data Confidence</span>
               <div className="p-2 rounded-lg bg-[#18181b] border border-white/5 shrink-0">
@@ -162,67 +163,16 @@ export default function OverviewView() {
         </motion.div>
       </div>
 
-      {/* ── Main Grid: Chart + Feed + Govs ── */}
-      <div className="grid grid-cols-1 lg:grid-cols-12 gap-3">
-        {/* STI Mini Chart */}
+      {/* Main Grid: Chart + Feed + Govs */}
+      <div className="grid grid-cols-1 lg:grid-cols-12 gap-6">
+        {/* STI Mini Chart (New Component) */}
         <motion.div
           initial={{ opacity: 0, y: 8 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 0.2 }}
-          className="lg:col-span-5"
+          className="lg:col-span-5 h-[580px]"
         >
-          <Card className="h-full">
-            <CardHeader className="pb-0">
-              <div className="flex items-center justify-between">
-                <CardTitle className="flex items-center gap-1.5">
-                  <Activity size={13} className="text-gold" />
-                  STI Trend
-                </CardTitle>
-                <Button variant="ghost" size="sm" className="text-[10px] h-6 text-gold" onClick={() => setView('sti')}>
-                  Full View <ChevronRight size={12} />
-                </Button>
-              </div>
-            </CardHeader>
-            <CardContent className="pt-3">
-              {/* STI gradient bar */}
-              <div className="relative mb-3">
-                <div className="h-1.5 rounded-full sti-gradient opacity-70" />
-                <div
-                  className="absolute top-1/2 -translate-y-1/2 w-2.5 h-2.5 rounded-full bg-white shadow border-2 border-orange-400"
-                  style={{ left: `${sti?.composite ?? 50}%` }}
-                />
-              </div>
-              {/* Axis mini */}
-              <div className="grid grid-cols-3 gap-2 mb-3">
-                {sti?.axes.slice(0, 6).map((axis) => (
-                  <div key={axis.id} className="text-center">
-                    <div className="text-[9px] text-muted-foreground truncate">{axis.name}</div>
-                    <div className="text-xs font-mono font-bold" style={{ color: axis.color }}>{axis.score}</div>
-                  </div>
-                ))}
-              </div>
-              {/* Chart */}
-              <div className="h-36">
-                <ResponsiveContainer width="100%" height="100%">
-                  <AreaChart data={history ?? []}>
-                    <defs>
-                      <linearGradient id="overviewGrad" x1="0" y1="0" x2="0" y2="1">
-                        <stop offset="5%" stopColor="#C9A84C" stopOpacity={0.2} />
-                        <stop offset="95%" stopColor="#C9A84C" stopOpacity={0} />
-                      </linearGradient>
-                    </defs>
-                    <XAxis dataKey="timestamp" tick={false} axisLine={false} tickLine={false} />
-                    <YAxis domain={[0, 100]} tick={false} axisLine={false} tickLine={false} width={0} />
-                    <Tooltip
-                      contentStyle={{ background: '#0F0F12', border: '1px solid #27272A', borderRadius: 8, fontSize: 11 }}
-                      labelStyle={{ color: '#A1A1AA' }}
-                    />
-                    <Area type="monotone" dataKey="value" stroke="#C9A84C" strokeWidth={1.5} fill="url(#overviewGrad)" dot={false} />
-                  </AreaChart>
-                </ResponsiveContainer>
-              </div>
-            </CardContent>
-          </Card>
+          <IncidentReportCard />
         </motion.div>
 
         {/* Recent Events */}
@@ -232,7 +182,7 @@ export default function OverviewView() {
           transition={{ delay: 0.25 }}
           className="lg:col-span-4"
         >
-          <Card className="h-full flex flex-col">
+          <Card className="h-full flex flex-col shadow-[11px_21px_3px_rgba(0,0,0,0.06),14px_27px_7px_rgba(0,0,0,0.10),19px_38px_14px_rgba(0,0,0,0.13),27px_54px_27px_rgba(0,0,0,0.16)] border-white/5 bg-[#111113] rounded-2xl">
             <CardHeader className="pb-0">
               <div className="flex items-center justify-between">
                 <CardTitle className="flex items-center gap-1.5">
@@ -285,7 +235,7 @@ export default function OverviewView() {
           transition={{ delay: 0.3 }}
           className="lg:col-span-3"
         >
-          <Card className="h-full">
+          <Card className="h-full shadow-[11px_21px_3px_rgba(0,0,0,0.06),14px_27px_7px_rgba(0,0,0,0.10),19px_38px_14px_rgba(0,0,0,0.13),27px_54px_27px_rgba(0,0,0,0.16)] border-white/5 bg-[#111113] rounded-2xl">
             <CardHeader className="pb-0">
               <CardTitle className="flex items-center gap-1.5">
                 <MapPin size={13} className="text-gold" />

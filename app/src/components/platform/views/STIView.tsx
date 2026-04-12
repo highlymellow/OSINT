@@ -3,7 +3,11 @@ import { useQuery } from '@tanstack/react-query'
 import { fetchCurrentSTI, fetchSTIHistory, fetchGovernorateScores } from '@/lib/api'
 import { getStatusColor, getStatusBg } from '@/lib/utils'
 import { Activity, TrendingUp, TrendingDown, Minus, Info } from 'lucide-react'
-import { ResponsiveContainer, AreaChart, Area, XAxis, YAxis, Tooltip, ReferenceLine } from 'recharts'
+import {
+  AreaChart, LinearXAxis, LinearXAxisTickSeries, LinearXAxisTickLabel,
+  LinearYAxis, LinearYAxisTickSeries, AreaSeries, Area, Gradient, GradientStop,
+  GridlineSeries, Gridline
+} from 'reaviz'
 import { useState } from 'react'
 
 const PERIODS = ['7d', '30d', '90d', '1yr'] as const
@@ -120,13 +124,13 @@ export default function STIView() {
           initial={{ opacity: 0, y: 10 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 0.2 }}
-          className="lg:col-span-2 glass-card-solid p-6"
+          className="lg:col-span-2 glass-card-solid p-6 relative shadow-[11px_21px_3px_rgba(0,0,0,0.06),14px_27px_7px_rgba(0,0,0,0.10),19px_38px_14px_rgba(0,0,0,0.13),27px_54px_27px_rgba(0,0,0,0.16)]"
         >
           <div className="flex items-center justify-between mb-4">
             <h3 className="text-xs font-bold tracking-[0.1em] uppercase text-text-secondary">
-              STI Trend
+              STI Trend Matrix
             </h3>
-            <div className="flex gap-1">
+            <div className="flex gap-1 z-10">
               {PERIODS.map((p) => (
                 <button
                   key={p}
@@ -142,45 +146,58 @@ export default function STIView() {
               ))}
             </div>
           </div>
-          <div className="h-64">
-            <ResponsiveContainer width="100%" height="100%">
-              <AreaChart data={history ?? []}>
-                <defs>
-                  <linearGradient id="stiGrad" x1="0" y1="0" x2="0" y2="1">
-                    <stop offset="5%" stopColor="#C9A84C" stopOpacity={0.3} />
-                    <stop offset="95%" stopColor="#C9A84C" stopOpacity={0} />
-                  </linearGradient>
-                </defs>
-                <XAxis
-                  dataKey="timestamp"
-                  tick={{ fontSize: 10, fill: '#6B7280' }}
-                  axisLine={{ stroke: '#2A2A30' }}
-                  tickLine={false}
-                  tickFormatter={(v) => new Date(v).toLocaleDateString('en', { month: 'short', day: 'numeric' })}
+          <div className="h-64 mt-4 w-full">
+            <AreaChart
+              data={[{
+                key: 'Composite Tension',
+                data: (history ?? []).map((h: any) => ({
+                  key: new Date(h.timestamp),
+                  data: h.value
+                }))
+              }]}
+              xAxis={
+                <LinearXAxis
+                  type="time"
+                  tickSeries={
+                    <LinearXAxisTickSeries
+                      label={
+                        <LinearXAxisTickLabel
+                          format={(v: any) => new Date(v).toLocaleDateString('en-US', { month: 'short', day: 'numeric' })}
+                          fill="#A0AEC0"
+                        />
+                      }
+                      tickSize={10}
+                    />
+                  }
                 />
-                <YAxis
-                  domain={[0, 100]}
-                  tick={{ fontSize: 10, fill: '#6B7280' }}
-                  axisLine={false}
-                  tickLine={false}
+              }
+              yAxis={
+                <LinearYAxis
+                  axisLine={null}
+                  tickSeries={<LinearYAxisTickSeries line={null} label={null} tickSize={10} />}
                 />
-                <Tooltip
-                  contentStyle={{ background: '#111113', border: '1px solid #2A2A30', borderRadius: 8, fontSize: 12 }}
-                  labelStyle={{ color: '#9CA3AF' }}
+              }
+              series={
+                <AreaSeries
+                  type="grouped"
+                  interpolation="smooth"
+                  area={
+                    <Area
+                      gradient={
+                        <Gradient
+                          stops={[
+                            <GradientStop key={1} stopOpacity={0} />,
+                            <GradientStop key={2} offset="100%" stopOpacity={0.4} />,
+                          ]}
+                        />
+                      }
+                    />
+                  }
+                  colorScheme={['#DC2626']}
                 />
-                <ReferenceLine y={50} stroke="#6B7280" strokeDasharray="3 3" label={{ value: 'Median', fill: '#6B7280', fontSize: 9 }} />
-                <ReferenceLine y={80} stroke="#DC2626" strokeDasharray="3 3" opacity={0.4} />
-                <Area
-                  type="monotone"
-                  dataKey="value"
-                  stroke="#C9A84C"
-                  strokeWidth={2}
-                  fill="url(#stiGrad)"
-                  dot={false}
-                  activeDot={{ r: 4, fill: '#C9A84C', stroke: '#0A0A0B', strokeWidth: 2 }}
-                />
-              </AreaChart>
-            </ResponsiveContainer>
+              }
+              gridlines={<GridlineSeries line={<Gridline strokeColor="rgba(255, 255, 255, 0.05)" />} />}
+            />
           </div>
         </motion.div>
       </div>

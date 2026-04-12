@@ -129,17 +129,7 @@ export default function LandingPage() {
           <AnimatePresence>
             {revealed && (
               <>
-                <motion.div
-                  initial={{ opacity: 0, x: -24 }}
-                  animate={{ opacity: 1, x: 0 }}
-                  transition={{ duration: 0.5, delay: 0.1 }}
-                  className="absolute top-12 left-8 md:top-24 md:left-12 pointer-events-auto inline-flex items-center gap-2 px-5 py-2 rounded-full border border-gold/20 bg-gold/5 shadow-[0_0_15px_rgba(201,168,76,0.15)] backdrop-blur-md"
-                >
-                  <Shield size={14} className="text-gold" />
-                  <span className="text-[10px] sm:text-[11px] font-bold tracking-[0.15em] text-gold uppercase">
-                    Geo-Political OSINT Platform
-                  </span>
-                </motion.div>
+
 
                 <motion.div
                   initial={{ opacity: 0, x: -24 }}
@@ -180,18 +170,18 @@ export default function LandingPage() {
                       variant="gold" 
                       size="lg" 
                       onClick={handleLaunch} 
-                      className="gold-glow group flex items-center gap-2 px-8 h-12 shadow-[0_0_20px_rgba(201,168,76,0.2)]"
+                      className="gold-glow group flex items-center justify-center gap-2.5 px-6 h-12 w-full sm:w-auto min-w-[220px] shadow-[0_0_20px_rgba(201,168,76,0.2)] text-sm tracking-wide"
                     >
                       Enter Intelligence Platform
-                      <ArrowRight size={15} className="group-hover:translate-x-1.5 transition-transform" />
+                      <ArrowRight size={15} className="group-hover:translate-x-1 transition-transform" />
                     </Button>
                     <Button 
                       variant="outline" 
                       size="lg" 
-                      className="border-white/10 hover:bg-white/5 text-white/80 transition-all group flex items-center gap-2 bg-black/40 backdrop-blur-md px-8 h-12"
+                      className="border-white/10 hover:bg-white/5 text-white/80 transition-all group flex items-center justify-center gap-2.5 bg-black/40 backdrop-blur-md px-6 h-12 w-full sm:w-auto min-w-[220px] text-sm tracking-wide"
                     >
                       Explore Capabilities
-                      <ChevronRight size={15} className="text-muted-foreground group-hover:text-white transition-colors" />
+                      <ArrowRight size={15} className="text-white/40 group-hover:text-white group-hover:translate-x-1 transition-all" />
                     </Button>
                   </div>
                 </motion.div>
