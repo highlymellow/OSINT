@@ -18,7 +18,7 @@ import type { NavView } from '@/lib/types'
 import { ResponsiveContainer, AreaChart, Area, XAxis, YAxis, Tooltip } from 'recharts'
 import { fetchSTIHistory } from '@/lib/api'
 
-const MODULE_ICONS: Record<string, React.ComponentType<{ size?: number; className?: string }>> = {
+const MODULE_ICONS: Record<string, React.ComponentType<any>> = {
   signal: Radio, terrain: MapPin, nexus: Network, lens: Eye,
   pulse: BarChart3, foresight: Radar, forge: Layers, sti: Activity,
 }

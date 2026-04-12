@@ -225,10 +225,10 @@ body {
 /* ── Perspective Container ──────────────────── */
 
 .perspective-container {
-  perspective: 1200px;
+  perspective: 1600px;
 }
 
 .perspective-tilt {
-  transform: rotateX(8deg) rotateY(-4deg);
+  transform: rotateX(2deg);
   transform-origin: center center;
 }
