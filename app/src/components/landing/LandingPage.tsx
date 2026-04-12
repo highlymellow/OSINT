@@ -11,8 +11,13 @@ import { Shield, Globe, Activity, Eye, Radar as RadarIcon, Network,
   Cpu, Sparkles, FileText, Users, TrendingUp
 } from 'lucide-react'
 import { GLSLHills } from '@/components/ui/glsl-hills'
+import { GlitchOrb } from '@/components/ui/glitched-orb'
+import { FluidOrbScan } from '@/components/ui/fluid-orb-scan'
 import { Radar, IconContainer } from '@/components/ui/radar-effect'
 import { GradientBars } from '@/components/ui/gradient-bars-background'
+import AnalystWorkspaceDemo from './AnalystWorkspaceDemo'
+import GlobalCoverageSection from './GlobalCoverageSection'
+import { Footer2 } from './Footer'
 
 const MODULES = [
   { icon: Activity, name: 'STI', desc: 'Sectarianism Tension Index — 6-axis real-time composite scoring with no global equivalent', accent: '#DC2626' },
@@ -44,6 +49,7 @@ const CAPABILITIES = [
 export default function LandingPage() {
   const setMode = useAppStore((s) => s.setMode)
   const [revealed, setRevealed] = useState(false)
+  const [isLaunching, setIsLaunching] = useState(false)
   
   const previewRef = useRef<HTMLDivElement>(null)
   const { scrollYProgress } = useScroll({
@@ -60,20 +66,40 @@ export default function LandingPage() {
     return () => clearTimeout(t)
   }, [])
 
+  const handleLaunch = () => {
+    setIsLaunching(true)
+    setTimeout(() => {
+      setMode('platform')
+    }, 2800) // Extended delay to let the Fluid Orb play its scan sequence
+  }
+
   return (
     <div className="min-h-screen bg-background text-foreground overflow-x-hidden">
 
+      {/* ═══ LAUNCH TRANSITION OVERLAY ════════════════════════════════ */}
+      <AnimatePresence>
+        {isLaunching && (
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            className="fixed inset-0 z-[100] bg-black"
+          >
+            {/* The exact fluid orb WebGPU scan sequence provided by the User */}
+            <FluidOrbScan />
+          </motion.div>
+        )}
+      </AnimatePresence>
+
       {/* ═══ HERO ═══════════════════════════════════════════════════ */}
       <section className="relative min-h-screen flex items-center justify-center overflow-hidden">
-        {/* Animated Hills Background */}
         <div className="absolute inset-0 z-0">
           <GLSLHills cameraZ={130} speed={0.45} planeSize={300} />
-          {/* Subtle gradient overlays to ensure text readability */}
           <div className="absolute inset-0 bg-gradient-to-t from-background via-background/40 to-transparent z-10" />
           <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_center,transparent_0%,rgba(10,10,11,0.85)_100%)] z-10" />
         </div>
+        
+        <GlitchOrb />
 
-        {/* Floating particles over the hills */}
         <div className="absolute inset-0 pointer-events-none overflow-hidden z-20">
           {Array.from({ length: 15 }).map((_, i) => (
             <motion.div
@@ -92,76 +118,92 @@ export default function LandingPage() {
           ))}
         </div>
 
-        {/* Scan line */}
         <motion.div
           className="absolute left-0 right-0 h-px bg-gradient-to-r from-transparent via-gold/15 to-transparent pointer-events-none"
           animate={{ y: ['-100vh', '100vh'] }}
           transition={{ duration: 10, repeat: Infinity, ease: 'linear' }}
         />
 
-        {/* Content */}
-        <div className="relative z-10 text-center max-w-5xl mx-auto px-6">
+        <div className="relative z-20 w-full h-full pointer-events-none">
           <AnimatePresence>
             {revealed && (
               <>
                 <motion.div
-                  initial={{ opacity: 0, y: 16 }}
-                  animate={{ opacity: 1, y: 0 }}
+                  initial={{ opacity: 0, x: -24 }}
+                  animate={{ opacity: 1, x: 0 }}
                   transition={{ duration: 0.5, delay: 0.1 }}
-                  className="inline-flex items-center gap-2 px-5 py-2 rounded-full border border-gold/40 bg-gold/10 mb-8 shadow-[0_0_15px_rgba(201,168,76,0.15)] animate-shimmer bg-[length:200%_100%]"
+                  className="absolute top-12 left-8 md:top-24 md:left-12 pointer-events-auto inline-flex items-center gap-2 px-5 py-2 rounded-full border border-gold/20 bg-gold/5 shadow-[0_0_15px_rgba(201,168,76,0.15)] backdrop-blur-md"
                 >
                   <Shield size={14} className="text-gold" />
-                  <span className="text-[11px] font-bold tracking-[0.15em] text-gold uppercase">
+                  <span className="text-[10px] sm:text-[11px] font-bold tracking-[0.15em] text-gold uppercase">
                     Geo-Political OSINT Platform
                   </span>
                 </motion.div>
 
-                <motion.h1
-                  initial={{ opacity: 0, y: 24 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  transition={{ duration: 0.7, delay: 0.25 }}
-                  className="text-5xl sm:text-6xl md:text-8xl font-bold tracking-[-0.03em] mb-6"
-                >
-                  <span className="text-foreground">MERI</span>
-                  <span className="text-gold gold-text-glow">DIAN</span>
-                </motion.h1>
-
-                <motion.p
-                  initial={{ opacity: 0, y: 16 }}
-                  animate={{ opacity: 1, y: 0 }}
+                <motion.div
+                  initial={{ opacity: 0, x: -24 }}
+                  animate={{ opacity: 1, x: 0 }}
                   transition={{ duration: 0.5, delay: 0.45 }}
-                  className="text-lg text-muted-foreground max-w-2xl mx-auto mb-2 leading-relaxed"
+                  className="absolute left-8 top-1/2 -translate-y-1/2 md:left-12 w-[180px] md:w-[250px] pointer-events-auto"
                 >
-                  The reference point from which MENA intelligence is calibrated.
-                </motion.p>
-
-                <motion.p
-                  initial={{ opacity: 0, y: 16 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  transition={{ duration: 0.5, delay: 0.55 }}
-                  className="text-sm text-text-tertiary max-w-xl mx-auto mb-10 leading-relaxed"
-                >
-                  Purpose-built for Iraq. Combining multilingual NLP, militia databases, 
-                  a real-time <span className="text-gold font-medium">Sectarianism Tension Index</span>, 
-                  and climate-security correlation.
-                </motion.p>
+                  <p className="text-xs md:text-sm font-mono text-muted-foreground leading-relaxed tracking-wide uppercase shadow-black drop-shadow-xl">
+                    The reference point<br />
+                    from which MENA<br />
+                    intelligence is<br />
+                    calibrated.
+                  </p>
+                </motion.div>
 
                 <motion.div
-                  initial={{ opacity: 0, y: 16 }}
+                  initial={{ opacity: 0, x: 24 }}
+                  animate={{ opacity: 1, x: 0 }}
+                  transition={{ duration: 0.5, delay: 0.55 }}
+                  className="absolute right-8 top-1/2 -translate-y-1/2 md:right-12 w-[180px] md:w-[250px] text-right pointer-events-auto"
+                >
+                  <p className="text-xs md:text-sm font-mono text-muted-foreground leading-relaxed tracking-wide uppercase shadow-black drop-shadow-xl">
+                    Purpose-built for Iraq.<br/>
+                    Multilingual NLP,<br/>
+                    militia databases, and<br/>
+                    <span className="text-gold font-medium">real-time STI</span> scoring.
+                  </p>
+                </motion.div>
+
+                <motion.div
+                  initial={{ opacity: 0, y: 24 }}
                   animate={{ opacity: 1, y: 0 }}
                   transition={{ duration: 0.5, delay: 0.7 }}
-                  className="flex flex-col sm:flex-row items-center justify-center gap-3"
+                  className="absolute bottom-[12%] left-0 right-0 flex flex-col items-center justify-center pointer-events-auto gap-4"
                 >
-                  <Button variant="gold" size="lg" onClick={() => setMode('platform')} className="gold-glow group flex items-center gap-2">
-                    Enter Intelligence Platform
-                    <ArrowRight size={15} className="group-hover:translate-x-1.5 transition-transform" />
-                  </Button>
-                  <Button variant="outline" size="lg" className="px-8 min-w-[200px]" asChild>
-                    <a href="#capabilities">
+                  <div className="flex flex-col sm:flex-row items-center justify-center gap-4">
+                    <Button 
+                      variant="gold" 
+                      size="lg" 
+                      onClick={handleLaunch} 
+                      className="gold-glow group flex items-center gap-2 px-8 h-12 shadow-[0_0_20px_rgba(201,168,76,0.2)]"
+                    >
+                      Enter Intelligence Platform
+                      <ArrowRight size={15} className="group-hover:translate-x-1.5 transition-transform" />
+                    </Button>
+                    <Button 
+                      variant="outline" 
+                      size="lg" 
+                      className="border-white/10 hover:bg-white/5 text-white/80 transition-all group flex items-center gap-2 bg-black/40 backdrop-blur-md px-8 h-12"
+                    >
                       Explore Capabilities
-                      <ChevronRight size={15} />
-                    </a>
-                  </Button>
+                      <ChevronRight size={15} className="text-muted-foreground group-hover:text-white transition-colors" />
+                    </Button>
+                  </div>
+                </motion.div>
+
+                <motion.div
+                  initial={{ opacity: 0, scale: 0.95 }}
+                  animate={{ opacity: 1, scale: 1 }}
+                  transition={{ duration: 0.7, delay: 0.25 }}
+                  className="absolute top-[18%] md:top-[12%] left-0 right-0 text-center flex flex-col items-center justify-center pointer-events-none"
+                >
+                  <h1 className="text-[12vw] sm:text-[13vw] leading-[0.8] font-black tracking-[-0.04em] text-white mix-blend-overlay opacity-30 md:opacity-40 blur-[0.5px]">
+                    MERIDIAN
+                  </h1>
                 </motion.div>
               </>
             )}
@@ -283,6 +325,14 @@ export default function LandingPage() {
           </motion.div>
         </div>
       </section>
+
+      {/* ═══ ANALYST WORKSPACE (CRM DEMO ADAPTATION) ══════════════ */}
+      <section className="bg-background pt-24 pb-20 px-6 md:px-12 w-full flex flex-col items-center border-b border-border/20 relative z-20">
+        <AnalystWorkspaceDemo />
+      </section>
+
+      {/* ═══ GLOBAL COVERAGE (COMBINED SECTION ADAPTATION) ════════ */}
+      <GlobalCoverageSection />
 
       {/* ═══ CAPABILITIES — 4-Column Grid ══════════════════════════ */}
       <section id="capabilities" className="py-40 md:py-56 px-6 md:px-12 lg:px-20 w-full flex flex-col items-center justify-center bg-[linear-gradient(to_bottom,rgba(255,255,255,0.02)_0%,transparent_100%)]">
@@ -607,6 +657,9 @@ export default function LandingPage() {
           </div>
         </div>
       </section>
+
+      {/* ═══ FOOTER ═════════════════════════════════════════════════ */}
+      <Footer2 />
     </div>
   )
 }

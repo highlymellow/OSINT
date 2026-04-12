@@ -1,6 +1,9 @@
 import { useAppStore } from '@/store/app'
 import Sidebar from './Sidebar'
 import TopBar from './TopBar'
+import FloatingDock from './FloatingDock'
+import BackgroundShader from './BackgroundShader'
+import { DottedSurface } from '@/components/ui/dotted-surface'
 import OverviewView from './views/OverviewView'
 import STIView from './views/STIView'
 import SignalView from './views/SignalView'
@@ -33,14 +36,18 @@ export default function PlatformShell() {
   }
 
   return (
-    <div className="h-screen flex bg-deep-black overflow-hidden">
+    <div className="h-screen flex bg-transparent overflow-hidden relative">
+      <BackgroundShader />
+      <DottedSurface className="opacity-30 mix-blend-screen" />
       <Sidebar />
-      <div className="flex-1 flex flex-col min-w-0">
+      <div className="flex-1 flex flex-col min-w-0 relative z-10">
         <TopBar />
-        <main className="flex-1 overflow-auto">
+        <main className="flex-1 overflow-auto pb-24">
           {renderView()}
         </main>
       </div>
+
+      <FloatingDock />
     </div>
   )
 }

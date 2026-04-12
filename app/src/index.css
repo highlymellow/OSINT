@@ -7,72 +7,164 @@
    ═══════════════════════════════════════════════════════════════ */
 
 @theme {
-  /* ── Meridian Core Palette ── */
-  --color-deep-black: #09090B;
-  --color-surface: #0F0F12;
-  --color-surface-elevated: #18181C;
-  --color-surface-hover: #1F1F25;
-  --color-border: #27272A;
-  --color-border-subtle: #1C1C20;
+  --color-deep-black: var(--meridian-deep-black);
+  --color-surface: var(--meridian-surface);
+  --color-surface-elevated: var(--meridian-surface-elevated);
+  --color-surface-hover: var(--meridian-surface-hover);
+  --color-border: var(--meridian-border);
+  --color-border-subtle: var(--meridian-border-subtle);
 
-  --color-gold: #C9A84C;
-  --color-gold-dim: #A08838;
-  --color-amber: #D4A843;
-  --color-teal: #2DD4BF;
-  --color-steel-blue: #3A5A7C;
+  --color-gold: var(--meridian-gold);
+  --color-gold-dim: var(--meridian-gold-dim);
+  --color-amber: var(--meridian-amber);
+  --color-teal: var(--meridian-teal);
+  --color-steel-blue: var(--meridian-steel-blue);
 
-  --color-alert-red: #DC2626;
-  --color-alert-orange: #EA580C;
-  --color-alert-yellow: #EAB308;
-  --color-alert-green: #16A34A;
+  --color-alert-red: var(--meridian-alert-red);
+  --color-alert-orange: var(--meridian-alert-orange);
+  --color-alert-yellow: var(--meridian-alert-yellow);
+  --color-alert-green: var(--meridian-alert-green);
 
-  --color-text-primary: #FAFAFA;
-  --color-text-secondary: #A1A1AA;
-  --color-text-tertiary: #71717A;
-  --color-text-muted: #52525B;
+  --color-text-primary: var(--meridian-text-primary);
+  --color-text-secondary: var(--meridian-text-secondary);
+  --color-text-tertiary: var(--meridian-text-tertiary);
+  --color-text-muted: var(--meridian-text-muted);
 
   --font-sans: 'Inter', system-ui, -apple-system, sans-serif;
   --font-mono: 'JetBrains Mono', 'Fira Code', monospace;
 
-  /* ── shadcn/ui Theme Variables ── */
-  --color-background: #09090B;
-  --color-foreground: #FAFAFA;
-  --color-card: #0F0F12;
-  --color-card-foreground: #FAFAFA;
-  --color-popover: #0F0F12;
-  --color-popover-foreground: #FAFAFA;
-  --color-primary: #C9A84C;
-  --color-primary-foreground: #09090B;
-  --color-secondary: #18181C;
-  --color-secondary-foreground: #FAFAFA;
-  --color-muted: #18181C;
-  --color-muted-foreground: #A1A1AA;
-  --color-accent: #1F1F25;
-  --color-accent-foreground: #FAFAFA;
-  --color-destructive: #DC2626;
-  --color-destructive-foreground: #FAFAFA;
-  --color-input: #27272A;
-  --color-ring: #C9A84C;
+  /* shadcn/ui Theme Variables */
+  --color-background: var(--meridian-background);
+  --color-foreground: var(--meridian-foreground);
+  --color-card: var(--meridian-card);
+  --color-card-foreground: var(--meridian-card-foreground);
+  --color-popover: var(--meridian-popover);
+  --color-popover-foreground: var(--meridian-popover-foreground);
+  --color-primary: var(--meridian-primary);
+  --color-primary-foreground: var(--meridian-primary-foreground);
+  --color-secondary: var(--meridian-secondary);
+  --color-secondary-foreground: var(--meridian-secondary-foreground);
+  --color-muted: var(--meridian-muted);
+  --color-muted-foreground: var(--meridian-muted-foreground);
+  --color-accent: var(--meridian-accent);
+  --color-accent-foreground: var(--meridian-accent-foreground);
+  --color-destructive: var(--meridian-destructive);
+  --color-destructive-foreground: var(--meridian-destructive-foreground);
+  --color-input: var(--meridian-input);
+  --color-ring: var(--meridian-ring);
 
   --radius-sm: 0.5rem;
   --radius-md: 0.625rem;
   --radius-lg: 0.75rem;
   --radius-xl: 1rem;
 
-  /* ── BorderBeam Animation ── */
   --animate-border-beam: border-beam calc(var(--duration, 15) * 1s) infinite linear;
 }
 
-/* ── Base ────────────────────────────────────── */
+:root {
+  /* ── DARK THEME (Default OSINT Aesthetic) ── */
+  color-scheme: dark;
+  --meridian-deep-black: #09090B;
+  --meridian-surface: #0F0F12;
+  --meridian-surface-elevated: #18181C;
+  --meridian-surface-hover: #1F1F25;
+  --meridian-border: #27272A;
+  --meridian-border-subtle: #1C1C20;
+
+  --meridian-gold: #C9A84C;
+  --meridian-gold-dim: #A08838;
+  --meridian-amber: #D4A843;
+  --meridian-teal: #2DD4BF;
+  --meridian-steel-blue: #3A5A7C;
+
+  --meridian-alert-red: #DC2626;
+  --meridian-alert-orange: #EA580C;
+  --meridian-alert-yellow: #EAB308;
+  --meridian-alert-green: #16A34A;
+
+  --meridian-text-primary: #FAFAFA;
+  --meridian-text-secondary: #A1A1AA;
+  --meridian-text-tertiary: #71717A;
+  --meridian-text-muted: #52525B;
+
+  --meridian-background: #09090B;
+  --meridian-foreground: #FAFAFA;
+  --meridian-card: #0F0F12;
+  --meridian-card-foreground: #FAFAFA;
+  --meridian-popover: #0F0F12;
+  --meridian-popover-foreground: #FAFAFA;
+  --meridian-primary: #C9A84C;
+  --meridian-primary-foreground: #09090B;
+  --meridian-secondary: #18181C;
+  --meridian-secondary-foreground: #FAFAFA;
+  --meridian-muted: #18181C;
+  --meridian-muted-foreground: #A1A1AA;
+  --meridian-accent: #1F1F25;
+  --meridian-accent-foreground: #FAFAFA;
+  --meridian-destructive: #DC2626;
+  --meridian-destructive-foreground: #FAFAFA;
+  --meridian-input: #27272A;
+  --meridian-ring: #C9A84C;
+  
+  --leaflet-bg: #09090B;
+  --glass-bg: rgba(15, 15, 18, 0.8);
+  --glass-shadow: none;
+}
+
+.light, [data-theme="light"] {
+  /* ── LIGHT THEME (Enterprise Clean White) ── */
+  color-scheme: light;
+  --meridian-deep-black: #0F172A; 
+  --meridian-surface: #FFFFFF;
+  --meridian-surface-elevated: #FFFFFF;
+  --meridian-surface-hover: #F8FAFC;
+  --meridian-border: #E2E8F0;
+  --meridian-border-subtle: #F1F5F9;
+
+  --meridian-gold: #09090B; 
+  --meridian-gold-dim: #334155;
+  --meridian-amber: #F59E0B;
+  --meridian-teal: #10B981;
+  --meridian-steel-blue: #0F172A;
+
+  --meridian-alert-red: #EF4444;
+  --meridian-alert-orange: #F97316;
+  --meridian-alert-yellow: #F59E0B;
+  --meridian-alert-green: #10B981;
+
+  --meridian-text-primary: #0F172A;
+  --meridian-text-secondary: #475569;
+  --meridian-text-tertiary: #64748B;
+  --meridian-text-muted: #94A3B8;
+
+  --meridian-background: #F8FAFC;
+  --meridian-foreground: #0F172A;
+  --meridian-card: #FFFFFF;
+  --meridian-card-foreground: #0F172A;
+  --meridian-popover: #FFFFFF;
+  --meridian-popover-foreground: #0F172A;
+  --meridian-primary: #0F172A; 
+  --meridian-primary-foreground: #FFFFFF;
+  --meridian-secondary: #F1F5F9;
+  --meridian-secondary-foreground: #0F172A;
+  --meridian-muted: #F1F5F9;
+  --meridian-muted-foreground: #64748B;
+  --meridian-accent: #F1F5F9;
+  --meridian-accent-foreground: #0F172A;
+  --meridian-destructive: #EF4444;
+  --meridian-destructive-foreground: #FFFFFF;
+  --meridian-input: #E2E8F0;
+  --meridian-ring: #0F172A;
+  
+  --leaflet-bg: #E2E8F0;
+  --glass-bg: rgba(255, 255, 255, 0.85);
+  --glass-shadow: 0 8px 32px rgba(11, 22, 44, 0.05);
+}
 
 * {
   margin: 0;
   padding: 0;
   box-sizing: border-box;
-}
-
-html {
-  color-scheme: dark;
 }
 
 body {
@@ -94,17 +186,19 @@ body {
 /* ── Glass Card ─────────────────────────────── */
 
 .glass-card {
-  background: rgba(15, 15, 18, 0.8);
+  background: var(--glass-bg);
   backdrop-filter: blur(24px);
   -webkit-backdrop-filter: blur(24px);
   border: 1px solid var(--color-border);
   border-radius: var(--radius-xl);
+  box-shadow: var(--glass-shadow);
 }
 
 .glass-card-solid {
   background: var(--color-card);
   border: 1px solid var(--color-border);
   border-radius: var(--radius-xl);
+  box-shadow: var(--glass-shadow);
 }
 
 /* ── Status Colors ──────────────────────────── */
@@ -174,13 +268,14 @@ body {
 /* ── Leaflet Overrides ──────────────────────── */
 
 .leaflet-container {
-  background: var(--color-background) !important;
+  background: var(--color-border-subtle) !important;
   font-family: var(--font-sans) !important;
 }
 .leaflet-control-zoom {
   border: 1px solid var(--color-border) !important;
   border-radius: 8px !important;
   overflow: hidden;
+  box-shadow: 0 1px 3px rgba(0,0,0,0.05) !important;
 }
 .leaflet-control-zoom a {
   background: var(--color-surface) !important;

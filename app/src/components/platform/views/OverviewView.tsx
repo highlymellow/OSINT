@@ -23,6 +23,14 @@ const MODULE_ICONS: Record<string, React.ComponentType<any>> = {
   pulse: BarChart3, foresight: Radar, forge: Layers, sti: Activity,
 }
 
+const getHeatColor = (value: number, max: number = 100) => {
+  const ratio = Math.min(Math.max(value / max, 0), 1);
+  if (ratio >= 0.75) return 'text-red-500 drop-shadow-[0_0_12px_rgba(239,68,68,0.4)]';
+  if (ratio >= 0.5) return 'text-orange-400 drop-shadow-[0_0_12px_rgba(251,146,60,0.4)]';
+  if (ratio >= 0.25) return 'text-yellow-400';
+  return 'text-green-400';
+}
+
 const MODULE_COLORS: Record<string, string> = {
   signal: '#C9A84C', terrain: '#2DD4BF', nexus: '#A855F7', lens: '#3B82F6',
   pulse: '#EA580C', foresight: '#EAB308', forge: '#16A34A', sti: '#DC2626',
@@ -63,28 +71,28 @@ export default function OverviewView() {
       </div>
 
       {/* ── KPI Row ── */}
-      <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
+      <div className="grid grid-cols-2 md:grid-cols-4 gap-3 mb-6">
         {/* STI Score KPI */}
         <motion.div initial={{ opacity: 0, y: 8 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0 }}>
-          <Card className="relative overflow-hidden group hover:border-gold/25 transition-all duration-300">
+          <Card className="relative overflow-hidden group hover:border-white/10 transition-all duration-300 bg-surface/50">
             <BorderBeam size={120} duration={20} delay={0} />
             <div className="p-4">
-              <div className="flex items-center justify-between mb-2">
-                <div className="flex items-center gap-1.5">
-                  <Activity size={13} className="text-gold" />
-                  <span className="text-[10px] text-muted-foreground font-medium uppercase tracking-wider">STI Score</span>
+              <div className="flex items-center justify-between mb-3">
+                <div className="flex items-center gap-2">
+                  <Activity size={14} className="text-muted-foreground" />
+                  <span className="text-[10px] text-muted-foreground font-bold uppercase tracking-widest">STI Score</span>
                 </div>
-                <TrendIcon size={13} className={trendColor} />
+                <TrendIcon size={14} className={trendColor} />
               </div>
-              <div className="flex items-end gap-1.5">
-                <span className="text-3xl font-bold font-mono">{sti?.composite ?? '—'}</span>
-                <span className="text-xs text-text-muted font-mono mb-1">/ 100</span>
+              <div className="flex items-end gap-1.5 mb-2">
+                <span className={`text-4xl font-bold font-mono leading-none ${getHeatColor(sti?.composite ?? 0)}`}>{sti?.composite ?? '—'}</span>
+                <span className="text-sm text-muted-foreground font-mono mb-1">/ 100</span>
               </div>
-              <div className="flex items-center gap-1.5 mt-1.5">
-                <Badge className={`${getStatusBg(sti?.status ?? '')} ${getStatusColor(sti?.status ?? '')} text-[8px]`}>
+              <div className="flex items-center gap-2">
+                <Badge className={`${getStatusBg(sti?.status ?? '')} ${getStatusColor(sti?.status ?? '')} text-[9px] font-bold tracking-widest px-2 py-0.5 uppercase`}>
                   {sti?.status ?? '—'}
                 </Badge>
-                <span className="text-[10px] text-muted-foreground">
+                <span className="text-xs font-mono font-medium text-muted-foreground">
                   {sti && sti.composite > sti.previousComposite ? '+' : ''}{sti ? sti.composite - sti.previousComposite : 0}
                 </span>
               </div>
@@ -94,46 +102,46 @@ export default function OverviewView() {
 
         {/* Events Today */}
         <motion.div initial={{ opacity: 0, y: 8 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.05 }}>
-          <Card className="p-4 hover:border-border transition-all">
-            <div className="flex items-center gap-1.5 mb-2">
-              <Zap size={13} className="text-red-400" />
-              <span className="text-[10px] text-muted-foreground font-medium uppercase tracking-wider">Active Events</span>
+          <Card className="p-4 hover:border-white/10 transition-all bg-surface/50 h-full flex flex-col justify-between">
+            <div className="flex items-center gap-2 mb-3">
+              <Zap size={14} className="text-muted-foreground" />
+              <span className="text-[10px] text-muted-foreground font-bold uppercase tracking-widest">Active Events</span>
             </div>
-            <div className="text-3xl font-bold font-mono">{events?.length ?? 0}</div>
-            <div className="flex items-center gap-1.5 mt-1.5">
-              <span className="text-[10px] text-red-400">{events?.filter(e => e.severity === 'critical').length ?? 0} critical</span>
+            <div className={`text-4xl font-bold font-mono leading-none mb-2 ${getHeatColor(events?.length ?? 0, 20)}`}>{events?.length ?? 0}</div>
+            <div className="flex items-center gap-1.5 opacity-80">
+              <span className="text-[10px] text-red-500 font-medium">{events?.filter(e => e.severity === 'critical').length ?? 0} critical</span>
               <span className="text-[10px] text-muted-foreground">·</span>
-              <span className="text-[10px] text-muted-foreground">{events?.filter(e => e.severity === 'high').length ?? 0} high</span>
+              <span className="text-[10px] text-orange-400 font-medium">{events?.filter(e => e.severity === 'high').length ?? 0} high</span>
             </div>
           </Card>
         </motion.div>
 
         {/* Actors */}
         <motion.div initial={{ opacity: 0, y: 8 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.1 }}>
-          <Card className="p-4 hover:border-border transition-all">
-            <div className="flex items-center gap-1.5 mb-2">
-              <Users size={13} className="text-purple-400" />
-              <span className="text-[10px] text-muted-foreground font-medium uppercase tracking-wider">Tracked Actors</span>
+          <Card className="p-4 hover:border-white/10 transition-all bg-surface/50 h-full flex flex-col justify-between">
+            <div className="flex items-center gap-2 mb-3">
+              <Users size={14} className="text-muted-foreground" />
+              <span className="text-[10px] text-muted-foreground font-bold uppercase tracking-widest">Tracked Actors</span>
             </div>
-            <div className="text-3xl font-bold font-mono">27</div>
-            <div className="flex items-center gap-1.5 mt-1.5">
-              <span className="text-[10px] text-red-400">5 critical</span>
+            <div className={`text-4xl font-bold font-mono leading-none mb-2 ${getHeatColor(27, 50)}`}>27</div>
+            <div className="flex items-center gap-1.5 opacity-80">
+              <span className="text-[10px] text-red-500 font-medium">5 critical</span>
               <span className="text-[10px] text-muted-foreground">·</span>
-              <span className="text-[10px] text-muted-foreground">40 connections</span>
+              <span className="text-[10px] text-muted-foreground font-medium">40 connections</span>
             </div>
           </Card>
         </motion.div>
 
         {/* Confidence */}
         <motion.div initial={{ opacity: 0, y: 8 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.15 }}>
-          <Card className="p-4 hover:border-border transition-all">
-            <div className="flex items-center gap-1.5 mb-2">
-              <Target size={13} className="text-gold" />
-              <span className="text-[10px] text-muted-foreground font-medium uppercase tracking-wider">Confidence</span>
+          <Card className="p-4 hover:border-white/10 transition-all bg-surface/50 h-full flex flex-col justify-between">
+            <div className="flex items-center gap-2 mb-3">
+              <Target size={14} className="text-muted-foreground" />
+              <span className="text-[10px] text-muted-foreground font-bold uppercase tracking-widest">Confidence</span>
             </div>
-            <div className="text-3xl font-bold font-mono text-gold">{sti ? `${Math.round(sti.confidence * 100)}%` : '—'}</div>
-            <div className="flex items-center gap-1.5 mt-1.5">
-              <span className="text-[10px] text-muted-foreground">{sti?.axes.reduce((s, a) => s + a.signals, 0).toLocaleString()} signals</span>
+            <div className={`text-4xl font-bold font-mono leading-none mb-2 ${getHeatColor((sti?.confidence ?? 0) * 100)}`}>{sti ? `${Math.round(sti.confidence * 100)}%` : '—'}</div>
+            <div className="flex items-center gap-1.5 opacity-80">
+              <span className="text-[10px] text-muted-foreground font-medium">{sti?.axes.reduce((s, a) => s + a.signals, 0).toLocaleString()} signals</span>
             </div>
           </Card>
         </motion.div>
@@ -297,46 +305,7 @@ export default function OverviewView() {
         </motion.div>
       </div>
 
-      {/* ── Module Grid ── */}
-      <motion.div
-        initial={{ opacity: 0, y: 8 }}
-        animate={{ opacity: 1, y: 0 }}
-        transition={{ delay: 0.35 }}
-      >
-        <div className="flex items-center justify-between mb-3">
-          <div className="flex items-center gap-1.5">
-            <Shield size={13} className="text-gold" />
-            <span className="text-xs font-semibold tracking-wide">Intelligence Modules</span>
-          </div>
-        </div>
-        <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-8 gap-2">
-          {modules.map((mod, i) => {
-            const Icon = MODULE_ICONS[mod.id] || Activity
-            const color = MODULE_COLORS[mod.id] || '#C9A84C'
-            return (
-              <motion.div
-                key={mod.id}
-                initial={{ opacity: 0, scale: 0.97 }}
-                animate={{ opacity: 1, scale: 1 }}
-                transition={{ delay: 0.38 + 0.03 * i }}
-              >
-                <Card
-                  className="group p-3 cursor-pointer hover:border-gold/25 transition-all duration-300"
-                  onClick={() => setView(mod.id as NavView)}
-                >
-                  <div className="w-7 h-7 rounded-md flex items-center justify-center mb-2" style={{ backgroundColor: color + '15' }}>
-                    <Icon size={14} style={{ color }} className="group-hover:scale-110 transition-transform" />
-                  </div>
-                  <div className="text-[10px] font-bold tracking-[0.08em]">{mod.name}</div>
-                  {mod.status !== 'active' && (
-                    <Badge variant="gold" className="text-[7px] py-0 px-1 mt-1">{mod.status}</Badge>
-                  )}
-                </Card>
-              </motion.div>
-            )
-          })}
-        </div>
-      </motion.div>
+      {/* ── Global Dock moved to PlatformShell ── */}
     </div>
   )
 }
