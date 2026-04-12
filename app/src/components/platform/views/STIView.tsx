@@ -2,7 +2,7 @@ import { motion } from 'motion/react'
 import { useQuery } from '@tanstack/react-query'
 import { fetchCurrentSTI, fetchSTIHistory, fetchGovernorateScores } from '@/lib/api'
 import { getStatusColor, getStatusBg } from '@/lib/utils'
-import { Activity, TrendingUp, TrendingDown, Minus, Info } from 'lucide-react'
+import { Fingerprint, TrendingUp, TrendingDown, Minus, Info } from 'lucide-react'
 import {
   AreaChart, LinearXAxis, LinearXAxisTickSeries, LinearXAxisTickLabel,
   LinearYAxis, LinearYAxisTickSeries, AreaSeries, Area, Gradient, GradientStop,
@@ -29,7 +29,7 @@ export default function STIView() {
         className="glass-card p-8 gold-glow"
       >
         <div className="flex items-center gap-2 mb-6">
-          <Activity size={18} className="text-gold" />
+          <Fingerprint size={18} className="text-gold" />
           <span className="text-[10px] text-text-tertiary tracking-[0.2em] uppercase font-semibold">
             Sectarianism Tension Index · Iraq · Real-Time
           </span>

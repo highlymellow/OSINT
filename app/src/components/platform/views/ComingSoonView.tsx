@@ -1,5 +1,5 @@
 import { motion } from 'motion/react'
-import { Shield, Construction, ArrowRight } from 'lucide-react'
+import { Clock, TerminalSquare, ArrowRight } from 'lucide-react'
 
 const MODULE_INFO: Record<string, { title: string; desc: string }> = {
   lens: {
@@ -43,16 +43,16 @@ export default function ComingSoonView({ module }: { module: string }) {
           transition={{ duration: 4, repeat: Infinity }}
           className="inline-flex items-center justify-center w-16 h-16 rounded-2xl bg-gold/10 border border-gold/20 mb-6"
         >
-          <Construction size={28} className="text-gold" />
+          <TerminalSquare size={28} className="text-gold" />
         </motion.div>
 
         <h2 className="text-2xl font-bold text-text-primary mb-3">{info.title}</h2>
         <p className="text-sm text-text-secondary leading-relaxed mb-6">{info.desc}</p>
 
         <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full border border-gold/30 bg-gold/5">
-          <Shield size={14} className="text-gold" />
+          <Clock size={14} className="text-gold" />
           <span className="text-xs text-gold font-medium tracking-wide">
-            Coming in Phase 2
+            Deploying in Phase 2
           </span>
         </div>
 

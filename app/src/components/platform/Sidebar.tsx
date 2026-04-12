@@ -2,35 +2,44 @@ import { motion } from 'motion/react'
 import { useAppStore } from '@/store/app'
 import type { NavView } from '@/lib/types'
 import {
-  LayoutDashboard, Activity, Radio, MapPin, Network,
-  Eye, BarChart3, Radar, Layers, Newspaper,
-  Bell, Settings, PanelLeftClose, PanelLeft, Shield, ChevronRight
+  Command, Fingerprint, RadioTower, Globe2, Workflow,
+  ScanEye, CandlestickChart, Orbit, Cpu, TerminalSquare,
+  BellRing, Settings2, ChevronRight
 } from 'lucide-react'
 import { cn } from '@/lib/utils'
 
 interface NavItem {
   id: NavView
   label: string
-  icon: React.ComponentType<{ size?: number; className?: string }>
+  icon: React.ComponentType<{ size?: number; className?: string; strokeWidth?: number }>
   status?: 'active' | 'beta' | 'coming'
 }
 
+const MeridianLogo = ({ size = 24, className = "" }) => (
+  <svg width={size} height={size} viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" className={className}>
+    <path d="M12 2L2 7L12 12L22 7L12 2Z" fill="currentColor" fillOpacity="0.2" stroke="currentColor" strokeWidth="1.5" strokeLinejoin="round"/>
+    <path d="M2 17L12 22L22 17" stroke="currentColor" strokeWidth="1.5" strokeLinejoin="round"/>
+    <path d="M2 12L12 17L22 12" stroke="currentColor" strokeWidth="1.5" strokeLinejoin="round"/>
+    <circle cx="12" cy="12" r="2" fill="currentColor" />
+  </svg>
+)
+
 const NAV_ITEMS: NavItem[] = [
-  { id: 'overview', label: 'Overview', icon: LayoutDashboard, status: 'active' },
-  { id: 'sti', label: 'STI Index', icon: Activity, status: 'active' },
-  { id: 'signal', label: 'Signal', icon: Radio, status: 'active' },
-  { id: 'terrain', label: 'Terrain', icon: MapPin, status: 'active' },
-  { id: 'nexus', label: 'Nexus', icon: Network, status: 'active' },
-  { id: 'lens', label: 'Lens', icon: Eye, status: 'beta' },
-  { id: 'pulse', label: 'Pulse', icon: BarChart3, status: 'beta' },
-  { id: 'foresight', label: 'Foresight', icon: Radar, status: 'beta' },
-  { id: 'forge', label: 'Forge', icon: Layers, status: 'beta' },
-  { id: 'press', label: 'Press', icon: Newspaper, status: 'active' },
+  { id: 'overview', label: 'Overview', icon: Command, status: 'active' },
+  { id: 'sti', label: 'STI Index', icon: Fingerprint, status: 'active' },
+  { id: 'signal', label: 'Signal', icon: RadioTower, status: 'active' },
+  { id: 'terrain', label: 'Terrain', icon: Globe2, status: 'active' },
+  { id: 'nexus', label: 'Nexus', icon: Workflow, status: 'active' },
+  { id: 'lens', label: 'Lens', icon: ScanEye, status: 'beta' },
+  { id: 'pulse', label: 'Pulse', icon: CandlestickChart, status: 'beta' },
+  { id: 'foresight', label: 'Foresight', icon: Orbit, status: 'beta' },
+  { id: 'forge', label: 'Forge', icon: Cpu, status: 'beta' },
+  { id: 'press', label: 'Press', icon: TerminalSquare, status: 'active' },
 ]
 
 const BOTTOM_ITEMS: NavItem[] = [
-  { id: 'alerts', label: 'Alerts', icon: Bell },
-  { id: 'settings', label: 'Settings', icon: Settings },
+  { id: 'alerts', label: 'Alerts', icon: BellRing },
+  { id: 'settings', label: 'Settings', icon: Settings2 },
 ]
 
 export default function Sidebar() {
@@ -53,11 +62,13 @@ export default function Sidebar() {
       <div className="h-[72px] flex items-center px-5 border-b border-[#1e1e21] shrink-0">
         <button
           onClick={() => setMode('landing')}
-          className="flex items-center gap-3 hover:opacity-80 transition-opacity"
+          className="flex items-center gap-3 w-full group"
         >
-          <Shield size={22} className="text-white shrink-0" />
+          <div className="p-1.5 rounded-lg bg-white/5 border border-white/10 group-hover:bg-white/10 transition-colors">
+            <MeridianLogo size={24} className="text-white shrink-0" />
+          </div>
           {!collapsed && (
-            <span className="text-lg font-semibold tracking-wide text-white">
+            <span className="text-lg font-bold tracking-widest text-white drop-shadow-md">
               MERIDIAN <span className="text-white/50 text-[10px] uppercase tracking-widest font-normal ml-1 border border-white/20 px-1.5 py-0.5 rounded-md">OSINT</span>
             </span>
           )}
@@ -73,22 +84,21 @@ export default function Sidebar() {
               key={item.id}
               onClick={() => setView(item.id)}
               className={cn(
-                "w-full flex items-center gap-4 px-4 py-3.5 rounded-2xl text-[15px] transition-all duration-200 relative group",
+                "w-full flex items-center gap-4 p-2.5 rounded-2xl transition-all duration-300 relative group",
                 isActive
-                  ? "bg-[#18181b] text-white font-semibold shadow-lg border border-white/5"
-                  : "text-white/50 hover:bg-white/5 hover:text-white font-medium"
+                  ? "bg-[#1C1C1E] text-white shadow-xl ring-1 ring-white/10"
+                  : "text-[#8E8E93] hover:bg-[#1C1C1E]/50 hover:text-white"
               )}
             >
-              <item.icon
-                size={20}
-                className={cn(
-                  "shrink-0 transition-colors",
-                  isActive ? "text-white" : "text-white/40 group-hover:text-white/80"
-                )}
-              />
+              <div className={cn(
+                "w-11 h-11 rounded-xl flex items-center justify-center shrink-0 transition-all duration-300",
+                isActive ? "bg-white/10 text-white shadow-inner" : "bg-transparent text-white/40 group-hover:bg-white/5 group-hover:text-white/80"
+              )}>
+                <item.icon size={22} strokeWidth={isActive ? 2.5 : 2} />
+              </div>
               {!collapsed && (
                 <div className="flex items-center justify-between flex-1">
-                  <span>{item.label}</span>
+                  <span className="text-[15px] font-semibold tracking-wide">{item.label}</span>
                   {item.status === 'beta' && (
                     <span className="text-[10px] font-bold tracking-wider uppercase text-zinc-500 bg-white/5 border border-white/10 px-2 py-0.5 rounded-md">
                       BETA
@@ -111,20 +121,19 @@ export default function Sidebar() {
               key={item.id}
               onClick={() => setView(item.id)}
               className={cn(
-                "w-full flex items-center gap-4 px-4 py-3.5 rounded-2xl text-[15px] transition-all duration-200 group",
+                "w-full flex items-center gap-4 p-2.5 rounded-2xl transition-all duration-300 relative group",
                 isActive
-                  ? "bg-[#18181b] text-white font-semibold shadow-lg border border-white/5"
-                  : "text-white/50 hover:bg-white/5 hover:text-white font-medium"
+                  ? "bg-[#1C1C1E] text-white shadow-xl ring-1 ring-white/10"
+                  : "text-[#8E8E93] hover:bg-[#1C1C1E]/50 hover:text-white"
               )}
             >
-              <item.icon
-                size={20}
-                className={cn(
-                  "shrink-0 transition-colors",
-                  isActive ? "text-white" : "text-white/40 group-hover:text-white/80"
-                )}
-              />
-              {!collapsed && <span>{item.label}</span>}
+              <div className={cn(
+                "w-11 h-11 rounded-xl flex items-center justify-center shrink-0 transition-all duration-300",
+                isActive ? "bg-white/10 text-white shadow-inner" : "bg-transparent text-white/40 group-hover:bg-white/5 group-hover:text-white/80"
+              )}>
+                <item.icon size={22} strokeWidth={isActive ? 2.5 : 2} />
+              </div>
+              {!collapsed && <span className="text-[15px] font-semibold tracking-wide flex-1 text-left">{item.label}</span>}
             </button>
           )
         })}

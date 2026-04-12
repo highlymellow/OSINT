@@ -10,9 +10,9 @@ import { BorderBeam } from '@/components/ui/border-beam'
 import { Button } from '@/components/ui/button'
 import {
   Activity, TrendingUp, TrendingDown, Minus, AlertTriangle,
-  Shield, Radio, MapPin, Network, Eye, BarChart3, Radar, Layers,
+  Fingerprint, RadioTower, Globe2, Workflow, ScanEye, CandlestickChart, Orbit, Cpu,
   ChevronRight, Zap, CheckCircle, FileText, Clock, Target,
-  Users, Globe, Newspaper, Search, Bell
+  Users, Command, TerminalSquare, Search, Bell, Radio, MapPin
 } from 'lucide-react'
 import type { NavView } from '@/lib/types'
 import { ResponsiveContainer, AreaChart, Area, XAxis, YAxis, Tooltip } from 'recharts'
@@ -20,8 +20,8 @@ import { fetchSTIHistory } from '@/lib/api'
 import IncidentReportCard from '@/components/ui/area-chart-1'
 
 const MODULE_ICONS: Record<string, React.ComponentType<any>> = {
-  signal: Radio, terrain: MapPin, nexus: Network, lens: Eye,
-  pulse: BarChart3, foresight: Radar, forge: Layers, sti: Activity,
+  signal: RadioTower, terrain: Globe2, nexus: Workflow, lens: ScanEye,
+  pulse: CandlestickChart, foresight: Orbit, forge: Cpu, sti: Fingerprint,
 }
 
 const getHeatColor = (value: number, max: number = 100) => {
