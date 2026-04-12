@@ -25,6 +25,8 @@ export default function PlatformShell() {
       case 'pulse':
       case 'foresight':
       case 'forge':
+      case 'alerts':
+      case 'settings':
         return <ComingSoonView module={currentView} />
       default: return <OverviewView />
     }
