@@ -24,7 +24,6 @@ trending_narratives = [
   {"narrative": "Turkmen property seizures in Kirkuk (ITF documentation)", "volume": 1456, "sentiment": -0.87, "platforms": ["Facebook", "Telegram"], "stiRelevant": True, "disinfoRisk": "LOW"},
   {"narrative": "Southern marshland drought displacement coverage", "volume": 642, "sentiment": -0.55, "platforms": ["Facebook", "YouTube"], "stiRelevant": False, "disinfoRisk": "NONE"},
 ]
-]
 
 # ──────────────────────────────────────────────────────────────────────────────
 # Disinformation & Bot Campaigns

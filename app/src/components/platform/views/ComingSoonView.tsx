@@ -1,5 +1,5 @@
 import { motion } from 'motion/react'
-import { Clock, TerminalSquare, ArrowRight } from 'lucide-react'
+import {  Clock, TerminalSquare, ArrowRight  } from "@/lib/icons"
 
 const MODULE_INFO: Record<string, { title: string; desc: string }> = {
   lens: {

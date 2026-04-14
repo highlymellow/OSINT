@@ -2,7 +2,7 @@ import { motion } from 'motion/react'
 import { useQuery } from '@tanstack/react-query'
 import { fetchCurrentSTI, fetchSTIHistory, fetchGovernorateScores } from '@/lib/api'
 import { getStatusColor, getStatusBg } from '@/lib/utils'
-import { Fingerprint, TrendingUp, TrendingDown, Minus, Info } from 'lucide-react'
+import {  Fingerprint, TrendingUp, TrendingDown, Minus, Info  } from "@/lib/icons"
 import {
   AreaChart, LinearXAxis, LinearXAxisTickSeries, LinearXAxisTickLabel,
   LinearYAxis, LinearYAxisTickSeries, AreaSeries, Area, Gradient, GradientStop,

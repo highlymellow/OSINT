@@ -1,10 +1,12 @@
 import { useState } from 'react'
 import { motion } from 'motion/react'
-import {
-  Newspaper, MapPin, Send, Users, FileText,
-  Shield, AlertTriangle, Phone, Radio, CheckCircle,
-  Eye, MessageCircle, Lock
-} from 'lucide-react'
+import { useQuery } from '@tanstack/react-query'
+import { 
+  TerminalSquare, MapPin, Send, Users, FileText,
+  AlertTriangle, Phone, RadioTower, CheckCircle,
+  Lock, ExternalLink, RefreshCw, Rss, Globe2
+ } from "@/lib/icons"
+import { fetchIntelligenceNews, type RSSArticle } from '@/lib/osint-feeds'
 
 const SAFETY_ZONES = [
   { gov: 'Baghdad', status: 'ELEVATED', violations: 12, recent: 'PMF checkpoint harassment', color: '#EAB308' },
@@ -25,14 +27,38 @@ const JOURNALISTS = [
 ]
 
 const TABS = [
-  { id: 'brief', label: 'Daily Brief', icon: FileText },
-  { id: 'safety', label: 'Field Safety', icon: Shield },
+  { id: 'brief', label: 'Live Intel Feed', icon: Rss },
+  { id: 'safety', label: 'Field Safety', icon: AlertTriangle },
   { id: 'submit', label: 'Submit Report', icon: Send },
   { id: 'network', label: 'Network', icon: Users },
 ] as const
 
+const SOURCE_COLORS: Record<string, string> = {
+  'Al Jazeera': '#D4A843',
+  'BBC Middle East': '#BB1919',
+  'NYT Middle East': '#1A1A1A',
+  'Reuters': '#FF8800',
+}
+
+function formatTimeAgo(date: string): string {
+  const diff = Date.now() - new Date(date).getTime()
+  const mins = Math.floor(diff / 60000)
+  if (mins < 60) return `${mins}m ago`
+  const hours = Math.floor(mins / 60)
+  if (hours < 24) return `${hours}h ago`
+  return `${Math.floor(hours / 24)}d ago`
+}
+
 export default function PressView() {
   const [activeTab, setActiveTab] = useState<string>('brief')
+
+  // LIVE RSS Intelligence Feed
+  const { data: newsArticles = [], isLoading: newsLoading, refetch: refetchNews } = useQuery({
+    queryKey: ['intelligence-news'],
+    queryFn: () => fetchIntelligenceNews(),
+    refetchInterval: 600_000, // 10 minutes
+    staleTime: 300_000,
+  })
 
   return (
     <div className="p-6 space-y-4 animate-fade-in">
@@ -54,59 +80,92 @@ export default function PressView() {
         ))}
       </div>
 
-      {/* ── Daily Brief ── */}
+      {/* ── Live Intelligence Feed ── */}
       {activeTab === 'brief' && (
         <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="space-y-4">
-          <div className="glass-card p-6 gold-glow">
-            <div className="flex items-center gap-2 mb-4">
-              <Newspaper size={16} className="text-gold" />
-              <span className="text-xs font-bold tracking-[0.15em] text-gold uppercase">
-                MERIDIAN Daily Intelligence Brief
+          {/* Feed header */}
+          <div className="flex items-center justify-between">
+            <div className="flex items-center gap-3">
+              <div className="w-2 h-2 rounded-full bg-green-500 animate-pulse" />
+              <span className="text-[10px] font-bold tracking-widest text-green-400 uppercase">
+                LIVE MULTI-SOURCE INTELLIGENCE FEED
+              </span>
+              <span className="text-[10px] text-text-muted font-mono">
+                {newsArticles.length} articles from 4 sources
               </span>
             </div>
-            <div className="text-[10px] text-text-muted font-mono mb-4">
-              {new Date().toLocaleDateString('en-US', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' })} | 0600 UTC+3 | Iraq + MENA
-            </div>
+            <button
+              onClick={() => refetchNews()}
+              className="flex items-center gap-1 text-[10px] text-text-muted hover:text-gold transition-colors"
+            >
+              <RefreshCw size={10} className={newsLoading ? 'animate-spin' : ''} />
+              Refresh
+            </button>
+          </div>
 
-            <div className="space-y-4">
-              <div className="p-4 rounded-lg bg-surface-elevated border border-border">
-                <h4 className="text-xs font-bold text-gold uppercase tracking-wide mb-2">Situation Overview</h4>
-                <p className="text-sm text-text-secondary leading-relaxed">
-                  Iraq's sectarian tension index holds at 65 (HIGH), driven by escalating Arab-Kurd-Turkmen friction
-                  in Kirkuk following property seizures and the Peshmerga-ISF standoff near Makhmur. The Sadrist
-                  movement's planned Najaf rally adds intra-Shia uncertainty. Southern marshland drought displaces
-                  200+ families, activating tribal axis. Cross-sectarian electoral reform proposal offers rare
-                  de-escalation signal.
-                </p>
+          {/* Articles */}
+          <div className="space-y-2">
+            {newsArticles.length === 0 && !newsLoading && (
+              <div className="glass-card p-8 text-center">
+                <Globe2 size={32} className="text-text-muted mx-auto mb-3 opacity-30" />
+                <p className="text-sm text-text-muted">Loading intelligence feeds...</p>
+                <p className="text-xs text-text-tertiary mt-1">Aggregating from Al Jazeera, BBC, NYT, Reuters</p>
               </div>
-
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
-                <div className="p-4 rounded-lg bg-surface-elevated border border-border">
-                  <h4 className="text-xs font-bold text-text-secondary uppercase tracking-wide mb-2">STI Status</h4>
-                  <div className="text-3xl font-bold font-mono text-orange-400">65 <span className="text-sm text-text-muted">/ 100</span></div>
-                  <div className="text-[10px] text-text-muted mt-1">Hotspots: Kirkuk 82, Tuz Khurmatu 76, Diyala 73</div>
-                </div>
-                <div className="p-4 rounded-lg bg-surface-elevated border border-border">
-                  <h4 className="text-xs font-bold text-text-secondary uppercase tracking-wide mb-2">Risk Indicators</h4>
-                  <div className="grid grid-cols-2 gap-2 text-xs">
-                    <div><span className="text-red-400">●</span> Security: SEVERE</div>
-                    <div><span className="text-orange-400">●</span> Aviation: HIGH</div>
-                    <div><span className="text-red-400">●</span> Maritime: CRITICAL</div>
-                    <div><span className="text-orange-400">●</span> Energy: HIGH</div>
+            )}
+            
+            {newsArticles.map((article, i) => (
+              <motion.a
+                key={article.id}
+                href={article.link}
+                target="_blank"
+                rel="noopener noreferrer"
+                initial={{ opacity: 0, y: 8 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ delay: 0.02 * Math.min(i, 20) }}
+                className="glass-card-solid p-4 hover:border-gold/20 transition-all duration-300 group cursor-pointer block"
+              >
+                <div className="flex items-start gap-3">
+                  {/* Source badge */}
+                  <div className="shrink-0">
+                    <span
+                      className="text-[9px] font-bold px-2 py-1 rounded border uppercase tracking-wider"
+                      style={{
+                        backgroundColor: (SOURCE_COLORS[article.source] || '#666') + '20',
+                        color: SOURCE_COLORS[article.source] || '#999',
+                        borderColor: (SOURCE_COLORS[article.source] || '#666') + '40',
+                      }}
+                    >
+                      {article.source.split(' ')[0]}
+                    </span>
                   </div>
-                </div>
-              </div>
 
-              <div className="p-4 rounded-lg bg-surface-elevated border border-border">
-                <h4 className="text-xs font-bold text-gold uppercase tracking-wide mb-2">72-Hour Outlook</h4>
-                <p className="text-sm text-text-secondary leading-relaxed">
-                  Sadrist rally in Najaf (Friday) likely to draw 50,000+. Coordination Framework may deploy
-                  counter-mobilization. STI Intra-Shia axis expected to spike 5-8 points. Kirkuk property dispute
-                  escalation continues — ITF delegation to Baghdad Monday may de-escalate or harden positions.
-                  Southern drought displacement trend accelerating.
-                </p>
-              </div>
-            </div>
+                  {/* Content */}
+                  <div className="flex-1 min-w-0">
+                    <h4 className="text-sm font-semibold text-text-primary group-hover:text-gold transition-colors line-clamp-2">
+                      {article.title}
+                    </h4>
+                    <p className="text-xs text-text-secondary mt-1.5 leading-relaxed line-clamp-2">
+                      {article.description}
+                    </p>
+                    <div className="flex items-center gap-2 mt-2">
+                      <span className="text-[10px] text-text-muted">{formatTimeAgo(article.pubDate)}</span>
+                      <span className="text-[10px] text-text-muted">·</span>
+                      <span className={`text-[9px] font-bold px-1.5 py-0.5 rounded uppercase ${
+                        article.category === 'conflict' ? 'bg-red-500/15 text-red-400'
+                        : article.category === 'security' ? 'bg-orange-500/15 text-orange-400'
+                        : article.category === 'political' ? 'bg-blue-500/15 text-blue-400'
+                        : 'bg-green-500/15 text-green-400'
+                      }`}>
+                        {article.category}
+                      </span>
+                    </div>
+                  </div>
+
+                  {/* External link */}
+                  <ExternalLink size={14} className="shrink-0 text-text-muted group-hover:text-gold transition-colors mt-1" />
+                </div>
+              </motion.a>
+            ))}
           </div>
         </motion.div>
       )}
@@ -116,7 +175,7 @@ export default function PressView() {
         <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="space-y-4">
           <div className="glass-card-solid p-5">
             <h3 className="text-xs font-bold tracking-[0.1em] uppercase text-text-secondary mb-4 flex items-center gap-2">
-              <Shield size={14} className="text-gold" />
+              <AlertTriangle size={14} className="text-gold" />
               Journalist Safety Dashboard
             </h3>
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3">

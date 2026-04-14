@@ -20,7 +20,6 @@ economic_indicators = [
   {"name": "Fed. Budget Exec.", "value": "62%", "change": "+8%", "trend": "up"},
   {"name": "Unemployment", "value": "16.2%", "change": "-0.5%", "trend": "down"},
 ]
-]
 
 # ──────────────────────────────────────────────────────────────────────────────
 # Strategic Energy & Commodity Metrics
@@ -30,7 +29,6 @@ energy_sector_data = [
   {"metric": "Brent Crude", "value": "$78.42", "change": "+1.2%", "status": "Ascending"},
   {"metric": "KRI Exports", "value": "Halted", "detail": "Pipeline dispute", "status": "Offline"},
   {"metric": "Gas Flaring", "value": "17.8 BCM/yr", "detail": "↓ 3% YoY", "status": "Improving"},
-]
 ]
 
 # ──────────────────────────────────────────────────────────────────────────────
@@ -47,7 +45,6 @@ investment_risks = [
   {"gov": "Tuz Khurmatu", "risk": 74, "grade": "D", "sector": "Agri (Turkmen)"},
   {"gov": "Tal Afar", "risk": 66, "grade": "C-", "sector": "Trade (Turkmen)"},
   {"gov": "Nineveh", "risk": 65, "grade": "C-", "sector": "Reconstruction"},
-]
 ]
 
 # ──────────────────────────────────────────────────────────────────────────────

@@ -48,6 +48,12 @@ class Settings(BaseSettings):
     KEYCLOAK_REALM: str = "meridian"
     KEYCLOAK_CLIENT_ID: str = "meridian-api"
 
+    # ── OSINT API Keys (optional — systems degrade gracefully) ───
+    OPENSKY_USERNAME: Optional[str] = None
+    OPENSKY_PASSWORD: Optional[str] = None
+    SHODAN_API_KEY: Optional[str] = None
+    ADSB_API_KEY: Optional[str] = None
+
     class Config:
         env_file = ".env"
         case_sensitive = True

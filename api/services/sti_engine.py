@@ -25,7 +25,7 @@ import asyncpg
 import json
 import logging
 
-from apps.api.core.config import settings
+from core.config import settings
 
 logger = logging.getLogger("meridian.sti_engine")
 

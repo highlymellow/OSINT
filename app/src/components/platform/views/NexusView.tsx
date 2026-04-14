@@ -3,10 +3,10 @@ import { motion } from 'motion/react'
 import { useQuery } from '@tanstack/react-query'
 import { fetchActors } from '@/lib/api'
 import { networkNodes, networkEdges, getNodeConnections, networkStats } from '@/lib/networks'
-import {
+import { 
   Network, Search, Filter, Users, Shield, Crosshair,
   ChevronRight, ExternalLink, AlertTriangle
-} from 'lucide-react'
+ } from "@/lib/icons"
 import { getStatusColor, getStatusBg } from '@/lib/utils'
 
 const CATEGORY_COLORS: Record<string, string> = {

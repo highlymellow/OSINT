@@ -36,7 +36,7 @@ async def list_actors(
     PRD: FR-NEX-001, FR-NEX-002
     Access: Analyst+
     """
-    from apps.api.services.sti_engine import STIEngine
+    from services.sti_engine import STIEngine
     engine = STIEngine()
     return await engine.get_actors(search=search, actor_type=type, risk=risk)
 
@@ -44,7 +44,7 @@ async def list_actors(
 @router.get("/{actor_id}", response_model=ActorResponse)
 async def get_actor(actor_id: str):
     """Get single actor by ID."""
-    from apps.api.services.sti_engine import STIEngine
+    from services.sti_engine import STIEngine
     engine = STIEngine()
     actors = await engine.get_actors()
     for actor in actors:

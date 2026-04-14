@@ -10,6 +10,7 @@ import SignalView from './views/SignalView'
 import TerrainView from './views/TerrainView'
 import NexusView from './views/NexusView'
 import PressView from './views/PressView'
+import ForesightView from './views/ForesightView'
 import ComingSoonView from './views/ComingSoonView'
 
 export default function PlatformShell() {
@@ -24,9 +25,9 @@ export default function PlatformShell() {
       case 'terrain': return <TerrainView />
       case 'nexus': return <NexusView />
       case 'press': return <PressView />
+      case 'foresight': return <ForesightView />
       case 'lens':
       case 'pulse':
-      case 'foresight':
       case 'forge':
       case 'alerts':
       case 'settings':

@@ -1,6 +1,7 @@
 import { motion } from 'motion/react'
 import { useQuery } from '@tanstack/react-query'
 import { fetchCurrentSTI, fetchEvents, fetchGovernorateScores } from '@/lib/api'
+import { fetchGDELTEvents, fetchEarthquakes, fetchIntelligenceNews, fetchReliefWebReports, fetchSatellitePositions, fetchCarrierPositions, fetchCorrelationSummary } from '@/lib/osint-feeds'
 import { modules } from '@/lib/data'
 import { useAppStore } from '@/store/app'
 import { getStatusColor, getStatusBg, formatTimestamp, getSeverityColor } from '@/lib/utils'
@@ -8,12 +9,12 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { Badge } from '@/components/ui/badge'
 import { BorderBeam } from '@/components/ui/border-beam'
 import { Button } from '@/components/ui/button'
-import {
+import { 
   Activity, TrendingUp, TrendingDown, Minus, AlertTriangle,
   Fingerprint, RadioTower, Globe2, Workflow, ScanEye, CandlestickChart, Orbit, Cpu,
   ChevronRight, Zap, CheckCircle, FileText, Clock, Target,
   Users, Command, TerminalSquare, Search, Bell, Radio, MapPin
-} from 'lucide-react'
+ } from "@/lib/icons"
 import type { NavView } from '@/lib/types'
 import { ResponsiveContainer, AreaChart, Area, XAxis, YAxis, Tooltip } from 'recharts'
 import { fetchSTIHistory } from '@/lib/api'
@@ -45,6 +46,50 @@ export default function OverviewView() {
   const { data: history } = useQuery({ queryKey: ['stiHistory', '30d'], queryFn: () => fetchSTIHistory('IQ', '30d') })
 
   const topGovs = govScores?.sort((a, b) => b.score - a.score).slice(0, 5) ?? []
+
+  // Live OSINT feeds
+  const { data: gdeltEvents = [] } = useQuery({
+    queryKey: ['gdelt-overview'],
+    queryFn: () => fetchGDELTEvents({ maxRecords: 25 }),
+    refetchInterval: 300_000,
+    staleTime: 120_000,
+  })
+  const { data: earthquakes = [] } = useQuery({
+    queryKey: ['earthquakes-overview'],
+    queryFn: () => fetchEarthquakes({ period: '1d' }),
+    refetchInterval: 120_000,
+    staleTime: 60_000,
+  })
+  const { data: newsArticles = [] } = useQuery({
+    queryKey: ['news-overview'],
+    queryFn: () => fetchIntelligenceNews(),
+    refetchInterval: 600_000,
+    staleTime: 300_000,
+  })
+  const { data: reliefWebReports = [] } = useQuery({
+    queryKey: ['reliefweb-overview'],
+    queryFn: () => fetchReliefWebReports({ limit: 15 }),
+    refetchInterval: 600_000,
+    staleTime: 300_000,
+  })
+  const { data: satellites = [] } = useQuery({
+    queryKey: ['satellites-overview'],
+    queryFn: () => fetchSatellitePositions({ groups: ['stations', 'gps-ops', 'military'], limit: 100 }),
+    refetchInterval: 120_000,
+    staleTime: 60_000,
+  })
+  const { data: carriers = [] } = useQuery({
+    queryKey: ['carriers-overview'],
+    queryFn: () => fetchCarrierPositions(),
+    refetchInterval: 600_000,
+    staleTime: 300_000,
+  })
+  const { data: correlationSummary } = useQuery({
+    queryKey: ['correlation-summary'],
+    queryFn: () => fetchCorrelationSummary('iraq'),
+    refetchInterval: 600_000,
+    staleTime: 300_000,
+  })
 
   const TrendIcon = sti?.trend === 'up' ? TrendingUp : sti?.trend === 'down' ? TrendingDown : Minus
   const trendColor = sti?.trend === 'up' ? 'text-red-400' : sti?.trend === 'down' ? 'text-green-400' : 'text-yellow-400'
@@ -269,6 +314,51 @@ export default function OverviewView() {
           </Card>
         </motion.div>
       </div>
+
+      {/* ── Live OSINT Telemetry ── */}
+      <motion.div
+        initial={{ opacity: 0, y: 12 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ delay: 0.5 }}
+      >
+        <Card className="rounded-2xl border-white/5 bg-[#111113] shadow-[11px_21px_3px_rgba(0,0,0,0.06),14px_27px_7px_rgba(0,0,0,0.10)] relative overflow-hidden">
+          <CardHeader className="pb-3">
+            <div className="flex items-center justify-between">
+              <CardTitle className="text-sm font-semibold text-white/80 flex items-center gap-2">
+                <Orbit size={16} className="text-gold" />
+                Live OSINT Data Sources
+              </CardTitle>
+              <div className="flex items-center gap-2">
+                <div className="w-2 h-2 rounded-full bg-green-500 animate-pulse" />
+                <span className="text-[10px] text-green-400 font-bold tracking-wider uppercase">Online</span>
+              </div>
+            </div>
+          </CardHeader>
+          <CardContent>
+            <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
+              {[
+                { name: 'GDELT Events', count: gdeltEvents.length, color: '#3B82F6', desc: 'Real-time conflict intelligence' },
+                { name: 'ReliefWeb', count: reliefWebReports.length, color: '#60A5FA', desc: 'UN OCHA humanitarian reports' },
+                { name: 'USGS Seismic', count: earthquakes.length, color: '#EAB308', desc: '24h earthquake feed' },
+                { name: 'Intel News', count: newsArticles.length, color: '#D4A843', desc: 'Multi-source RSS aggregation' },
+                { name: 'Satellites', count: satellites.length, color: '#4FC3F7', desc: 'Orbital asset tracking (SGP4)' },
+                { name: 'Carrier Groups', count: carriers.length, color: '#EF5350', desc: 'USN carrier OSINT estimation' },
+                { name: 'Correlations', count: correlationSummary?.active_correlations || 0, color: '#AB47BC', desc: 'Cross-domain intel links' },
+                { name: 'Internal Events', count: events?.length || 0, color: '#DC2626', desc: 'MERIDIAN event pipeline' },
+              ].map((src) => (
+                <div key={src.name} className="p-3 rounded-xl bg-white/[0.02] border border-white/5 hover:border-white/10 transition-all">
+                  <div className="flex items-center justify-between mb-2">
+                    <span className="text-[10px] text-white/40 font-medium uppercase tracking-wider">{src.name}</span>
+                    <div className="w-1.5 h-1.5 rounded-full bg-green-500" />
+                  </div>
+                  <div className="text-xl font-bold font-mono" style={{ color: src.color }}>{src.count}</div>
+                  <div className="text-[9px] text-white/25 mt-1">{src.desc}</div>
+                </div>
+              ))}
+            </div>
+          </CardContent>
+        </Card>
+      </motion.div>
 
       {/* ── Global Dock moved to PlatformShell ── */}
     </div>

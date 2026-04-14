@@ -1,4 +1,4 @@
-import { Activity, ArrowRight, Database, Globe, Network, ShieldAlert } from 'lucide-react';
+import {  Activity, ArrowRight, Database, Globe, Network, ShieldAlert  } from "@/lib/icons";
 import { AreaChart, Area, XAxis, YAxis, CartesianGrid, ResponsiveContainer } from 'recharts';
 import { Card } from '@/components/ui/card';
 

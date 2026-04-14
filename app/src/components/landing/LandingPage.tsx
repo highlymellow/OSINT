@@ -5,11 +5,11 @@ import { Button } from '@/components/ui/button'
 import { BorderBeam } from '@/components/ui/border-beam'
 import { Card } from '@/components/ui/card'
 import { Badge } from '@/components/ui/badge'
-import { Shield, Globe, Activity, Eye, Radar as RadarIcon, Network,
+import {  Shield, Globe, Activity, Eye, Radar as RadarIcon, Network,
   ChevronRight, Zap, Lock, BarChart3, MapPin,
   ArrowRight, Layers, Target, Radio, Newspaper,
   Cpu, Sparkles, FileText, Users, TrendingUp
-} from 'lucide-react'
+ } from "@/lib/icons"
 import { GLSLHills } from '@/components/ui/glsl-hills'
 import { GlitchOrb } from '@/components/ui/glitched-orb'
 import { FluidOrbScan } from '@/components/ui/fluid-orb-scan'

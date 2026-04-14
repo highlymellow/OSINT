@@ -1,11 +1,11 @@
 import { motion } from 'motion/react'
 import { useAppStore } from '@/store/app'
 import type { NavView } from '@/lib/types'
-import {
+import { 
   Command, Fingerprint, RadioTower, Globe2, Workflow,
   ScanEye, CandlestickChart, Orbit, Cpu, TerminalSquare,
   BellRing, Settings2, ChevronRight
-} from 'lucide-react'
+ } from "@/lib/icons"
 import { cn } from '@/lib/utils'
 
 interface NavItem {

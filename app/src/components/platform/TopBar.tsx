@@ -1,5 +1,5 @@
 import { useAppStore } from '@/store/app'
-import { Search, Bell, Globe, Clock } from 'lucide-react'
+import {  Search, Bell, Globe, Clock  } from "@/lib/icons"
 import { cn } from '@/lib/utils'
 
 const VIEW_TITLES: Record<string, string> = {

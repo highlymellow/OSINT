@@ -1,7 +1,7 @@
 import { motion } from 'motion/react'
 import { useAppStore } from '@/store/app'
 import { modules } from '@/lib/data'
-import { Command, Fingerprint, RadioTower, Globe2, Workflow, ScanEye, CandlestickChart, Orbit, Cpu, TerminalSquare } from 'lucide-react'
+import {  Command, Fingerprint, RadioTower, Globe2, Workflow, ScanEye, CandlestickChart, Orbit, Cpu, TerminalSquare  } from "@/lib/icons"
 import type { NavView } from '@/lib/types'
 
 const MODULE_ICONS: Record<string, React.ComponentType<any>> = {

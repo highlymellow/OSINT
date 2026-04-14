@@ -17,8 +17,8 @@ from typing import List, Optional
 from datetime import datetime, timezone
 from enum import Enum
 
-from apps.api.core.config import settings
-from apps.api.services.sti_engine import STIEngine
+from core.config import settings
+from services.sti_engine import STIEngine
 
 router = APIRouter()
 sti_engine = STIEngine()

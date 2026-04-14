@@ -104,7 +104,7 @@ const initialChartData: ChartSeries[] = [
   },
 ];
 
-const validateChartData = (data: ChartSeries[]): ChartDataTypes[] => {
+const validateChartData = (data: ChartSeries[]): any[] => {
   return data.map(series => ({
     ...series,
     data: series.data.map(item => ({

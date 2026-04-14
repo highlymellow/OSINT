@@ -10,8 +10,8 @@ from contextlib import asynccontextmanager
 import time
 import logging
 
-from apps.api.core.config import settings
-from apps.api.routers import sti, events, actors, health, foresight, forge, lens, pulse
+from core.config import settings
+from routers import sti, events, actors, health, foresight, forge, lens, pulse, osint_proxy, satellites, maritime, correlation, flights, radio, shodan_search, cctv
 
 logger = logging.getLogger("meridian")
 
@@ -75,6 +75,14 @@ app.include_router(foresight.router, prefix="/api/v1/foresight", tags=["Foresigh
 app.include_router(forge.router, prefix="/api/v1/forge", tags=["Forge"])
 app.include_router(lens.router, prefix="/api/v1/lens", tags=["Lens"])
 app.include_router(pulse.router, prefix="/api/v1/pulse", tags=["Pulse"])
+app.include_router(osint_proxy.router, prefix="/api/v1/osint", tags=["OSINT Proxy"])
+app.include_router(satellites.router, prefix="/api/v1/satellites", tags=["Satellites"])
+app.include_router(maritime.router, prefix="/api/v1/maritime", tags=["Maritime"])
+app.include_router(correlation.router, prefix="/api/v1/correlation", tags=["Correlation"])
+app.include_router(flights.router, prefix="/api/v1/flights", tags=["Flights"])
+app.include_router(radio.router, prefix="/api/v1/radio", tags=["Radio"])
+app.include_router(shodan_search.router, prefix="/api/v1/shodan", tags=["Shodan"])
+app.include_router(cctv.router, prefix="/api/v1/cctv", tags=["CCTV"])
 
 
 # ── Root ─────────────────────────────────────────────────────────

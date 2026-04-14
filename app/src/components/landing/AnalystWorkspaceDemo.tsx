@@ -1,6 +1,6 @@
 import { Card, CardContent } from "@/components/ui/card";
 import { useState } from "react";
-import { PlayCircle } from "lucide-react";
+import {  PlayCircle  } from "@/lib/icons";
 
 export default function AnalystWorkspaceDemo() {
   const [isPlaying, setIsPlaying] = useState(false);

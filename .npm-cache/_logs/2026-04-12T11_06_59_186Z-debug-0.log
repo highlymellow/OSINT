@@ -10,3 +10,9 @@
 9 verbose logfile logs-max:10 dir:/Users/mb/Desktop/OSINT/.npm-cache/_logs/2026-04-12T11_06_59_186Z-
 10 verbose logfile /Users/mb/Desktop/OSINT/.npm-cache/_logs/2026-04-12T11_06_59_186Z-debug-0.log
 11 silly logfile done cleaning log files
+12 verbose cwd /Users/mb/Desktop/OSINT/app
+13 verbose os Darwin 25.5.0
+14 verbose node v24.14.1
+15 verbose npm  v11.11.0
+16 verbose exit 0
+17 info ok

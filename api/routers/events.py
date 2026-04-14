@@ -49,7 +49,7 @@ async def list_events(
     """
     # When backend is live, this queries PostgreSQL
     # For now, return simulated data via the engine
-    from apps.api.services.sti_engine import STIEngine
+    from services.sti_engine import STIEngine
     engine = STIEngine()
     return await engine.get_events(
         limit=limit, offset=offset, event_type=type,
@@ -61,7 +61,7 @@ async def list_events(
 @router.get("/{event_id}", response_model=EventResponse)
 async def get_event(event_id: str):
     """Get single event by ID."""
-    from apps.api.services.sti_engine import STIEngine
+    from services.sti_engine import STIEngine
     engine = STIEngine()
     events = await engine.get_events(limit=100)
     for evt in events:
