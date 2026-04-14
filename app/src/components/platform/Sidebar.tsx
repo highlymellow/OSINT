@@ -55,7 +55,7 @@ export default function Sidebar() {
       initial={{ x: -20, opacity: 0 }}
       animate={{ x: 0, opacity: 1 }}
       className={cn(
-        "h-full flex flex-col border-r border-[#1e1e21] bg-[#09090b] transition-all duration-300",
+        "hidden md:flex h-full flex-col border-r border-[#1e1e21] bg-[#09090b] transition-all duration-300",
         collapsed ? "w-20" : "w-64"
       )}
     >

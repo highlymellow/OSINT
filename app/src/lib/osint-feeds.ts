@@ -758,7 +758,7 @@ function _estimateSatPosition(tle: any): { lat: number; lng: number; alt: number
 export async function fetchCarrierPositions(): Promise<Carrier[]> {
   // Try backend carrier tracker
   try {
-    const res = await fetch('/api/v1/maritime/carriers')
+    const res = await fetch(`${import.meta.env.VITE_API_URL || ''}/api/v1/maritime/carriers`)
     if (res.ok) {
       const data = await res.json()
       return data.carriers || []
@@ -773,7 +773,7 @@ export async function fetchCarrierPositions(): Promise<Carrier[]> {
 
 export async function fetchNavalBases(): Promise<NavalBase[]> {
   try {
-    const res = await fetch('/api/v1/maritime/naval-bases')
+    const res = await fetch(`${import.meta.env.VITE_API_URL || ''}/api/v1/maritime/naval-bases`)
     if (res.ok) {
       const data = await res.json()
       return data.bases || []
@@ -979,7 +979,7 @@ export async function fetchAircraft(params?: {
 
 export async function fetchMaritime(): Promise<Vessel[]> {
   try {
-    const res = await fetch('/api/v1/maritime/live', { signal: AbortSignal.timeout(5000) })
+    const res = await fetch(`${import.meta.env.VITE_API_URL || ''}/api/v1/maritime/live`, { signal: AbortSignal.timeout(5000) })
     if (res.ok) {
       const data = await res.json()
       return data.vessels || []
@@ -1049,7 +1049,7 @@ export async function fetchShodanResults(query?: string): Promise<{ results: Sho
 
 export async function fetchShodanQueries(): Promise<Record<string, { query: string; label: string; risk: string; description: string }>> {
   try {
-    const res = await fetch('/api/v1/shodan/queries')
+    const res = await fetch(`${import.meta.env.VITE_API_URL || ''}/api/v1/shodan/queries`)
     if (res.ok) {
       const data = await res.json()
       return data.queries || {}
@@ -1236,7 +1236,7 @@ export interface APTGroup {
 
 export async function fetchAPTGroups(): Promise<APTGroup[]> {
   try {
-    const res = await fetch('/api/v1/cyber/apt-groups')
+    const res = await fetch(`${import.meta.env.VITE_API_URL || ''}/api/v1/cyber/apt-groups`)
     if (!res.ok) throw new Error(`HTTP ${res.status}`)
     return await res.json()
   } catch (err) {

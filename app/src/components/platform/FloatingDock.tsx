@@ -27,7 +27,7 @@ export default function FloatingDock() {
         transition={{ type: 'spring', stiffness: 300, damping: 30 }}
         className="pointer-events-auto flex items-center p-2 rounded-[2rem] bg-[#0F0F12]/95 backdrop-blur-2xl border border-white/10 shadow-[0_20px_50px_rgba(0,0,0,0.5)] max-w-full"
       >
-        <div className="flex items-center gap-2 px-2">
+        <div className="flex items-center gap-2 px-2 overflow-x-auto no-scrollbar max-w-[90vw] md:max-w-full">
           {dockItems.map((mod) => {
             const Icon = mod.icon
             const isActive = currentView === mod.id

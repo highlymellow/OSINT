@@ -576,7 +576,7 @@ function EscalationEnginePanel() {
   const { data, isLoading } = useQuery<EscalationData>({
     queryKey: ['escalation-probability'],
     queryFn: async () => {
-      const res = await fetch('/api/v1/escalation/probability')
+      const res = await fetch(`${import.meta.env.VITE_API_URL || ''}/api/v1/escalation/probability`)
       if (!res.ok) throw new Error('Escalation API failed')
       return res.json()
     },
