@@ -157,16 +157,16 @@ export interface CorrelationResult {
 }
 
 export interface Aircraft {
-  icao24: string
+  id: string
   callsign: string
-  country: string
+  owner: string
   lat: number
   lng: number
-  altitude_ft: number | null
-  velocity_knots: number | null
+  alt: number | null
+  velocity: number | null
   heading: number | null
   is_military: boolean
-  category: string
+  type: string
 }
 
 export interface GPSJammingEvent {
@@ -823,11 +823,16 @@ export async function fetchCorrelations(params?: {
 
   try {
     const res = await fetch(`/api/v1/correlation/analyze?region=${region}&hours=${hours}&min_score=${minScore}`)
+    console.log('[OSINT] Correlation API raw response status:', res.status)
     if (res.ok) {
-      return await res.json()
+      const data = await res.json()
+      console.log('[OSINT] Correlation API parsed data:', data)
+      return data
+    } else {
+      console.error('[OSINT] Correlation API error:', res.status, await res.text())
     }
-  } catch {
-    // Backend not available
+  } catch (err) {
+    console.error('[OSINT] Correlation fetch exception:', err)
   }
 
   // Fallback: return empty
@@ -865,13 +870,43 @@ export async function fetchAircraft(params?: {
 }): Promise<Aircraft[]> {
   const { latMin = 23, latMax = 40, lngMin = 35, lngMax = 60, militaryOnly = false } = params || {}
 
-  // Try backend first
+  let mergedFlights: Aircraft[] = []
+
   try {
-    const res = await fetch(`/api/v1/flights/live?lat_min=${latMin}&lat_max=${latMax}&lng_min=${lngMin}&lng_max=${lngMax}&military_only=${militaryOnly}`)
-    if (res.ok) {
-      const data = await res.json()
-      if (data.aircraft?.length > 0) return data.aircraft
+    const [openSkyRes, adsbRes] = await Promise.all([
+      fetch(`/api/v1/flights/live?lat_min=${latMin}&lat_max=${latMax}&lng_min=${lngMin}&lng_max=${lngMax}&military_only=${militaryOnly}`),
+      fetch(`/api/v1/flights/adsb-mil`)
+    ])
+
+    if (openSkyRes.ok) {
+      const openSkyData = await openSkyRes.json()
+      if (openSkyData.aircraft?.length > 0) {
+        mergedFlights = [...mergedFlights, ...openSkyData.aircraft.map((a: any) => ({
+          id: a.icao24,
+          callsign: a.callsign,
+          owner: a.country,
+          lat: a.lat,
+          lng: a.lng,
+          alt: a.altitude_ft,
+          velocity: a.velocity_knots,
+          heading: a.heading,
+          is_military: a.is_military,
+          type: a.aircraft_type || 'Civ'
+        }))]
+      }
     }
+
+    if (adsbRes.ok) {
+      const adsbData = await adsbRes.json()
+      if (adsbData.flights?.length > 0) {
+        // Filter out adsb planes that already exist from OpenSky to prevent ghost-duplicates
+        const existingIds = new Set(mergedFlights.map(f => f.id))
+        const newAdsb = adsbData.flights.filter((f: any) => !existingIds.has(f.id))
+        mergedFlights = [...mergedFlights, ...newAdsb]
+      }
+    }
+
+    if (mergedFlights.length > 0) return mergedFlights
   } catch { /* fall through */ }
 
   // Fallback: try adsb.lol direct proxy
@@ -1157,5 +1192,30 @@ export async function fetchAllOSINTFeeds(): Promise<OSINTSnapshot> {
     news: news.status === 'fulfilled' ? news.value : [],
     weatherAlerts: weatherAlerts.status === 'fulfilled' ? weatherAlerts.value : [],
     lastUpdated: new Date().toISOString(),
+  }
+}
+
+
+// ── APT (Cyber Threat) Groups ─────────────────────────────────
+
+export interface APTGroup {
+  id: number
+  name: string
+  origin: string
+  targets: string
+  description: string
+  lat: number
+  lng: number
+  color: string
+}
+
+export async function fetchAPTGroups(): Promise<APTGroup[]> {
+  try {
+    const res = await fetch('/api/v1/cyber/apt-groups')
+    if (!res.ok) throw new Error(`HTTP ${res.status}`)
+    return await res.json()
+  } catch (err) {
+    console.warn('[APT] Failed to fetch APT groups:', err)
+    return []
   }
 }

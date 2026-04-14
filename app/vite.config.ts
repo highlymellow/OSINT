@@ -112,9 +112,16 @@ export default defineConfig({
         rewrite: (path) => path.replace(/^\/proxy\/adsb/, ''),
         secure: true,
       },
+      // Polymarket prediction markets (geopolitical odds)
+      '/proxy/polymarket': {
+        target: 'https://gamma-api.polymarket.com',
+        changeOrigin: true,
+        rewrite: (path) => path.replace(/^\/proxy\/polymarket/, ''),
+        secure: true,
+      },
       // FastAPI backend (when running)
       '/api': {
-        target: 'http://localhost:8000',
+        target: 'http://localhost:8005',
         changeOrigin: true,
       },
     },

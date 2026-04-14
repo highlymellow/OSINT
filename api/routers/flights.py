@@ -58,10 +58,46 @@ MIL_CALLSIGNS = [
     "NCHO", "NCH",    # NATO
 ]
 
-# Aircraft type codes for military
+# Aircraft type codes for military (enriched from War-Probability-OSINT research)
 MIL_TYPES = ["C17", "C130", "C5", "KC135", "KC10", "E3", "E6", "E8", "RC135", "P8", "EP3",
              "B52", "B1B", "B2", "F15", "F16", "F18", "F22", "F35", "A10",
              "MQ9", "RQ4", "MQ1", "EUFI", "RAFAL", "GRIPEN"]
+
+# Human-readable names for high-interest military aircraft
+MIL_TYPE_NAMES = {
+    "C17":   "C-17 Globemaster III",
+    "C5M":   "C-5M Super Galaxy",
+    "C5":    "C-5 Galaxy",
+    "C130":  "C-130 Hercules",
+    "C130J": "C-130J Super Hercules",
+    "K35R":  "KC-135 Stratotanker",
+    "KC135": "KC-135 Stratotanker",
+    "KC46":  "KC-46 Pegasus",
+    "KC10":  "KC-10 Extender",
+    "E4B":   "E-4B Nightwatch (Doomsday)",
+    "E6B":   "E-6B Mercury (TACAMO)",
+    "E3":    "E-3 Sentry (AWACS)",
+    "E8":    "E-8C JSTARS",
+    "RC135": "RC-135 Rivet Joint",
+    "EP3":   "EP-3E Aries II",
+    "P8":    "P-8A Poseidon",
+    "B52":   "B-52H Stratofortress",
+    "B52H":  "B-52H Stratofortress",
+    "B1B":   "B-1B Lancer",
+    "B2":    "B-2 Spirit",
+    "F15":   "F-15 Eagle",
+    "F16":   "F-16 Fighting Falcon",
+    "F18":   "F/A-18 Super Hornet",
+    "F22":   "F-22 Raptor",
+    "F35":   "F-35 Lightning II",
+    "A10":   "A-10 Thunderbolt II",
+    "MQ9":   "MQ-9 Reaper (Drone)",
+    "RQ4":   "RQ-4 Global Hawk (Drone)",
+    "MQ1":   "MQ-1 Predator (Drone)",
+    "EUFI":  "Eurofighter Typhoon",
+    "RAFAL": "Dassault Rafale",
+    "GRIPEN":"JAS 39 Gripen",
+}
 
 
 @router.get("/live")
@@ -324,3 +360,65 @@ async def detect_gps_jamming(
 async def get_watch_zones():
     """Return configured aircraft watch zones."""
     return JSONResponse(content={"zones": WATCH_ZONES})
+
+@router.get("/adsb-mil")
+async def get_adsb_military():
+    """
+    Fetch global military aircraft directly from ADSB Exchange's free military endpoint.
+    """
+    global _flight_cache, _flight_cache_ts
+    
+    if time.time() - _flight_cache_ts < FLIGHT_CACHE_TTL:
+        if "adsb_mil" in _flight_cache:
+            return _flight_cache["adsb_mil"]
+
+    client = _get_client()
+    try:
+        resp = await client.get("https://api.adsb.one/v2/mil")
+        if resp.status_code == 200:
+            data = resp.json()
+            aircraft = []
+            for ac in data.get("ac", []):
+                lat = ac.get("lat")
+                lng = ac.get("lon")
+                if lat is None or lng is None:
+                    continue
+                
+                alt = ac.get("alt_baro")
+                alt_value = 0
+                if alt != "ground" and alt is not None:
+                    try:
+                        alt_value = float(alt)
+                    except ValueError:
+                        pass
+
+                flight_id = str(ac.get("flight", "")).strip()
+                if not flight_id:
+                    flight_id = ac.get("hex", "UNKNOWN")
+
+                aircraft.append({
+                    "id": ac.get("hex", ""),
+                    "callsign": flight_id,
+                    "lat": float(lat),
+                    "lng": float(lng),
+                    "alt": alt_value,
+                    "velocity": float(ac.get("gs", 0) or 0),
+                    "heading": float(ac.get("true_heading", 0) or ac.get("track", 0) or 0),
+                    "is_military": True,
+                    "owner": ac.get("desc", ""),
+                    "type": ac.get("t", "")
+                })
+            
+            result = {
+                "count": len(aircraft),
+                "flights": aircraft,
+                "fetched_at": datetime.now(timezone.utc).isoformat()
+            }
+            
+            _flight_cache["adsb_mil"] = result
+            _flight_cache_ts = time.time()
+            return result
+    except Exception as e:
+        logger.error(f"Failed to fetch ADSB.one mil data: {e}")
+        
+    return {"count": 0, "flights": [], "error": "Fetch failed"}

@@ -79,4 +79,5 @@ export {
   RocketLaunch,
   ShieldCheck,
   NavigationArrow,
+  Copy,
 } from "@phosphor-icons/react";

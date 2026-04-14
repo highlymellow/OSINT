@@ -279,8 +279,8 @@ export function TerrainWebGLLayers({ activeLayers, aircraft, satellites, shodan,
                 is_military: a.is_military, 
                 heading: a.heading || 0,
                 type: 'Aircraft',
-                title: a.callsign || a.icao24,
-                subtitle: a.country,
+                title: a.callsign || a.id,
+                subtitle: a.owner || a.type,
                 props: JSON.stringify(a)
             }
           }))

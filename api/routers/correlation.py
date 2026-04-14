@@ -187,120 +187,120 @@ async def analyze_correlations(
     client = _get_client()
     events = []
     
-    # ── Source 1: GDELT events ──────────────────────────────────
-    try:
-        gdelt_url = (
-            f"https://api.gdeltproject.org/api/v2/doc/doc"
-            f"?query={region}&mode=artlist&maxrecords=50"
-            f"&format=json&sort=datedesc&timespan={hours}h"
-        )
-        resp = await client.get(gdelt_url)
-        if resp.status_code == 200:
-            data = resp.json()
-            for art in data.get("articles", [])[:30]:
-                title = art.get("title", "")
-                country = _extract_country(title)
-                events.append({
-                    "id": f"gdelt-{hash(title) % 100000}",
-                    "title": title,
-                    "source": "GDELT",
-                    "source_type": "news",
-                    "timestamp": art.get("seendate", ""),
-                    "domains": _classify_event(title),
-                    "country": country["name"] if country else region.title(),
-                    "geo": {"lat": country["lat"], "lng": country["lng"]} if country else None,
-                    "url": art.get("url", ""),
-                })
-    except Exception as e:
-        logger.debug(f"GDELT correlation fetch: {e}")
-    
-    # ── Source 2: USGS earthquakes ──────────────────────────────
-    try:
-        usgs_url = "https://earthquake.usgs.gov/earthquakes/feed/v1.0/summary/all_day.geojson"
-        resp = await client.get(usgs_url)
-        if resp.status_code == 200:
-            data = resp.json()
-            for feat in data.get("features", [])[:50]:
-                props = feat.get("properties", {})
-                coords = feat.get("geometry", {}).get("coordinates", [0, 0, 0])
-                lng, lat = coords[0], coords[1]
-                title = props.get("title", f"M{props.get('mag', '?')} Earthquake")
-                events.append({
-                    "id": f"usgs-{feat.get('id', '')}",
-                    "title": title,
-                    "source": "USGS",
-                    "source_type": "seismic",
-                    "timestamp": datetime.fromtimestamp(
-                        props.get("time", 0) / 1000, tz=timezone.utc
-                    ).isoformat(),
-                    "domains": ["seismic"],
-                    "country": _extract_country(props.get("place", ""))["name"] if _extract_country(props.get("place", "")) else "Unknown",
-                    "geo": {"lat": lat, "lng": lng},
-                    "magnitude": props.get("mag", 0),
-                    "url": props.get("url", ""),
-                })
-    except Exception as e:
-        logger.debug(f"USGS correlation fetch: {e}")
-    
-    # ── Source 3: GDACS disaster alerts ─────────────────────────
-    try:
-        gdacs_url = "https://www.gdacs.org/xml/rss.xml"
-        resp = await client.get(gdacs_url)
-        if resp.status_code == 200:
-            import re as regex
-            items = regex.findall(r"<item>(.*?)</item>", resp.text, regex.DOTALL)
-            for item in items[:30]:
-                title_match = regex.search(r"<title>(.*?)</title>", item)
-                date_match = regex.search(r"<pubDate>(.*?)</pubDate>", item)
-                lat_match = regex.search(r"<geo:lat>(.*?)</geo:lat>", item)
-                lng_match = regex.search(r"<geo:long>(.*?)</geo:long>", item)
-                
-                if title_match:
-                    title = title_match.group(1)
-                    events.append({
-                        "id": f"gdacs-{hash(title) % 100000}",
-                        "title": title,
-                        "source": "GDACS",
-                        "source_type": "disaster",
-                        "timestamp": date_match.group(1) if date_match else "",
-                        "domains": _classify_event(title),
-                        "country": _extract_country(title)["name"] if _extract_country(title) else "Global",
-                        "geo": {
-                            "lat": float(lat_match.group(1)),
-                            "lng": float(lng_match.group(1)),
-                        } if lat_match and lng_match else None,
-                        "url": "",
-                    })
-    except Exception as e:
-        logger.debug(f"GDACS correlation fetch: {e}")
-    
-    # ── Source 4: ReliefWeb RSS ──────────────────────────────────
-    try:
-        rw_url = f"https://reliefweb.int/updates/rss.xml?search={region}&limit=20"
-        resp = await client.get(rw_url)
-        if resp.status_code == 200:
-            import re as regex
-            items = regex.findall(r"<item>(.*?)</item>", resp.text, regex.DOTALL)
-            for item in items[:20]:
-                title_match = regex.search(r"<title>(.*?)</title>", item)
-                date_match = regex.search(r"<pubDate>(.*?)</pubDate>", item)
-                
-                if title_match:
-                    title = title_match.group(1)
+    import asyncio
+
+    # Define fetch functions for concurrent execution
+    async def fetch_gdelt():
+        try:
+            gdelt_url = f"https://api.gdeltproject.org/api/v2/doc/doc?query={region}&mode=artlist&maxrecords=50&format=json&sort=datedesc&timespan={hours}h"
+            resp = await client.get(gdelt_url)
+            if resp.status_code == 200:
+                data = resp.json()
+                for art in data.get("articles", [])[:30]:
+                    title = art.get("title", "")
                     country = _extract_country(title)
                     events.append({
-                        "id": f"rw-{hash(title) % 100000}",
+                        "id": f"gdelt-{hash(title) % 100000}",
                         "title": title,
-                        "source": "ReliefWeb",
-                        "source_type": "humanitarian",
-                        "timestamp": date_match.group(1) if date_match else "",
+                        "source": "GDELT",
+                        "source_type": "news",
+                        "timestamp": art.get("seendate", ""),
                         "domains": _classify_event(title),
                         "country": country["name"] if country else region.title(),
                         "geo": {"lat": country["lat"], "lng": country["lng"]} if country else None,
-                        "url": "",
+                        "url": art.get("url", ""),
                     })
-    except Exception as e:
-        logger.debug(f"ReliefWeb correlation fetch: {e}")
+        except Exception as e:
+            logger.debug(f"GDELT correlation fetch: {e}")
+
+    async def fetch_usgs():
+        try:
+            usgs_url = "https://earthquake.usgs.gov/earthquakes/feed/v1.0/summary/all_day.geojson"
+            resp = await client.get(usgs_url)
+            if resp.status_code == 200:
+                data = resp.json()
+                for feat in data.get("features", [])[:50]:
+                    props = feat.get("properties", {})
+                    coords = feat.get("geometry", {}).get("coordinates", [0, 0, 0])
+                    lng, lat = coords[0], coords[1]
+                    title = props.get("title", f"M{props.get('mag', '?')} Earthquake")
+                    events.append({
+                        "id": f"usgs-{feat.get('id', '')}",
+                        "title": title,
+                        "source": "USGS",
+                        "source_type": "seismic",
+                        "timestamp": datetime.fromtimestamp(props.get("time", 0) / 1000, tz=timezone.utc).isoformat(),
+                        "domains": ["seismic"],
+                        "country": _extract_country(props.get("place", ""))["name"] if _extract_country(props.get("place", "")) else "Unknown",
+                        "geo": {"lat": lat, "lng": lng},
+                        "magnitude": props.get("mag", 0),
+                        "url": props.get("url", ""),
+                    })
+        except Exception as e:
+            logger.debug(f"USGS correlation fetch: {e}")
+
+    async def fetch_gdacs():
+        try:
+            gdacs_url = "https://www.gdacs.org/xml/rss.xml"
+            resp = await client.get(gdacs_url)
+            if resp.status_code == 200:
+                import re as regex
+                items = regex.findall(r"<item>(.*?)</item>", resp.text, regex.DOTALL)
+                for item in items[:30]:
+                    title_match = regex.search(r"<title>(.*?)</title>", item)
+                    date_match = regex.search(r"<pubDate>(.*?)</pubDate>", item)
+                    lat_match = regex.search(r"<geo:lat>(.*?)</geo:lat>", item)
+                    lng_match = regex.search(r"<geo:long>(.*?)</geo:long>", item)
+                    if title_match:
+                        title = title_match.group(1)
+                        events.append({
+                            "id": f"gdacs-{hash(title) % 100000}",
+                            "title": title,
+                            "source": "GDACS",
+                            "source_type": "disaster",
+                            "timestamp": date_match.group(1) if date_match else "",
+                            "domains": _classify_event(title),
+                            "country": _extract_country(title)["name"] if _extract_country(title) else "Global",
+                            "geo": {"lat": float(lat_match.group(1)), "lng": float(lng_match.group(1))} if lat_match and lng_match else None,
+                            "url": "",
+                        })
+        except Exception as e:
+            logger.debug(f"GDACS correlation fetch: {e}")
+
+    async def fetch_reliefweb():
+        try:
+            rw_url = f"https://reliefweb.int/updates/rss.xml?search={region}&limit=20"
+            resp = await client.get(rw_url)
+            if resp.status_code == 200:
+                import re as regex
+                items = regex.findall(r"<item>(.*?)</item>", resp.text, regex.DOTALL)
+                for item in items[:20]:
+                    title_match = regex.search(r"<title>(.*?)</title>", item)
+                    date_match = regex.search(r"<pubDate>(.*?)</pubDate>", item)
+                    if title_match:
+                        title = title_match.group(1)
+                        country = _extract_country(title)
+                        events.append({
+                            "id": f"rw-{hash(title) % 100000}",
+                            "title": title,
+                            "source": "ReliefWeb",
+                            "source_type": "humanitarian",
+                            "timestamp": date_match.group(1) if date_match else "",
+                            "domains": _classify_event(title),
+                            "country": country["name"] if country else region.title(),
+                            "geo": {"lat": country["lat"], "lng": country["lng"]} if country else None,
+                            "url": "",
+                        })
+        except Exception as e:
+            logger.debug(f"ReliefWeb correlation fetch: {e}")
+
+    # Launch all 4 network requests concurrently
+    await asyncio.gather(
+        fetch_gdelt(),
+        fetch_usgs(),
+        fetch_gdacs(),
+        fetch_reliefweb()
+    )
     
     # ── Run cross-correlation ──────────────────────────────────
     correlations = []

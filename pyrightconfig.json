@@ -1,1 +1,7 @@
-{"venvPath": "api", "venv": ".venv", "extraPaths": ["api"]}
+{
+  "venvPath": "api",
+  "venv": ".venv",
+  "extraPaths": [
+    "./api"
+  ]
+}

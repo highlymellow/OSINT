@@ -11,7 +11,7 @@ import time
 import logging
 
 from core.config import settings
-from routers import sti, events, actors, health, foresight, forge, lens, pulse, osint_proxy, satellites, maritime, correlation, flights, radio, shodan_search, cctv
+from routers import sti, events, actors, health, foresight, forge, lens, pulse, osint_proxy, satellites, maritime, correlation, flights, radio, shodan_search, cctv, cyber, escalation
 
 logger = logging.getLogger("meridian")
 
@@ -85,6 +85,8 @@ app.include_router(flights.router, prefix="/api/v1/flights", tags=["Flights"])
 app.include_router(radio.router, prefix="/api/v1/radio", tags=["Radio"])
 app.include_router(shodan_search.router, prefix="/api/v1/shodan", tags=["Shodan"])
 app.include_router(cctv.router, prefix="/api/v1/cctv", tags=["CCTV"])
+app.include_router(cyber.router, prefix="/api/v1/cyber", tags=["Cyber Threats"])
+app.include_router(escalation.router, prefix="/api/v1/escalation", tags=["Escalation Predictor"])
 
 
 # ── Root ─────────────────────────────────────────────────────────

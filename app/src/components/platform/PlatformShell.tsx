@@ -11,6 +11,9 @@ import TerrainView from './views/TerrainView'
 import NexusView from './views/NexusView'
 import PressView from './views/PressView'
 import ForesightView from './views/ForesightView'
+import LensView from './views/LensView'
+import PulseView from './views/PulseView'
+import ForgeView from './views/ForgeView'
 import ComingSoonView from './views/ComingSoonView'
 
 export default function PlatformShell() {
@@ -26,9 +29,9 @@ export default function PlatformShell() {
       case 'nexus': return <NexusView />
       case 'press': return <PressView />
       case 'foresight': return <ForesightView />
-      case 'lens':
-      case 'pulse':
-      case 'forge':
+      case 'lens': return <LensView />
+      case 'pulse': return <PulseView />
+      case 'forge': return <ForgeView />
       case 'alerts':
       case 'settings':
         return <ComingSoonView module={currentView} />

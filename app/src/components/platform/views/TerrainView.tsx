@@ -29,6 +29,7 @@ import {
   fetchCCTVCameras,
   fetchShodanResults,
   fetchRadioReceivers,
+  fetchAPTGroups,
   type USGSEarthquake,
   type NASAFire,
   type RegionDossier,
@@ -39,6 +40,7 @@ import {
   type CCTVCamera,
   type ShodanResult,
   type RadioReceiver,
+  type APTGroup,
 } from '@/lib/osint-feeds'
 
 const layerGroups: { category: string; layers: { id: string; name: string; color: string; icon: ComponentType<any> }[] }[] = [
@@ -80,6 +82,7 @@ const layerGroups: { category: string; layers: { id: string; name: string; color
   {
     category: 'Cyber & Signals',
     layers: [
+      { id: 'apt', name: 'APT Threat Groups (57)', color: '#F43F5E', icon: NavigationArrow },
       { id: 'shodan', name: 'Exposed Infra (Shodan)', color: '#10B981', icon: Binoculars },
       { id: 'radio', name: 'WebSDR Receivers', color: '#8B5CF6', icon: Broadcast },
       { id: 'cctv', name: 'CCTV Public Mesh', color: '#14B8A6', icon: SecurityCamera },
@@ -195,6 +198,13 @@ export default function TerrainView() {
   const { data: radioReceivers = [] } = useQuery({
     queryKey: ['radio-terrain'],
     queryFn: () => fetchRadioReceivers(),
+    staleTime: Infinity,
+  })
+
+  // APT Threat Groups
+  const { data: aptGroups = [] } = useQuery({
+    queryKey: ['apt-groups'],
+    queryFn: () => fetchAPTGroups(),
     staleTime: Infinity,
   })
 
@@ -333,6 +343,31 @@ export default function TerrainView() {
                 >
                   <Fire size={10} weight="fill" className="text-white" />
                 </div>
+              </MarkerContent>
+            </MapMarker>
+          ))}
+
+          {/* APT Threat Groups — Bug icons */}
+          {activeLayers.includes('apt') && aptGroups.map((apt) => (
+            <MapMarker key={`apt-${apt.id}`} longitude={apt.lng} latitude={apt.lat}>
+              <MarkerContent>
+                <div
+                  className="p-1.5 rounded-lg border cursor-pointer hover:scale-125 transition-transform"
+                  style={{
+                    backgroundColor: `${apt.color}22`,
+                    borderColor: `${apt.color}66`,
+                    boxShadow: `0 0 10px ${apt.color}44`,
+                  }}
+                  onClick={() => setSelectedEntity({
+                    type: 'APT Threat Group', title: apt.name, subtitle: `Origin: ${apt.origin}`,
+                    props: { ...apt, origin: apt.origin, targets: apt.targets, description: apt.description }
+                  })}
+                >
+                  <NavigationArrow size={12} weight="fill" style={{ color: apt.color }} />
+                </div>
+                <MarkerLabel position="top" className="bg-black/90 px-2 py-1 rounded text-white border border-white/10 backdrop-blur-sm text-[9px]">
+                  {apt.name}
+                </MarkerLabel>
               </MarkerContent>
             </MapMarker>
           ))}
