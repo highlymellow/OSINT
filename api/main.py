@@ -45,7 +45,9 @@ app.add_middleware(
         "http://localhost:3000",    # Next.js dev
         "http://localhost:3001",    # Next.js alt
         "http://localhost:5173",    # Vite React dev
+        "http://localhost:5174",    # Vite React alt port
         "http://127.0.0.1:5173",    # Vite Python mapping
+        "http://127.0.0.1:5174",    # Vite alt port
         "http://localhost:8080",    # Vue/Webpack dev
         "https://meridian.app",     # Production
     ],
