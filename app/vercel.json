@@ -1,0 +1,68 @@
+{
+  "rewrites": [
+    {
+      "source": "/proxy/gdelt/:match*",
+      "destination": "https://api.gdeltproject.org/:match*"
+    },
+    {
+      "source": "/proxy/usgs/:match*",
+      "destination": "https://earthquake.usgs.gov/:match*"
+    },
+    {
+      "source": "/proxy/countries/:match*",
+      "destination": "https://restcountries.com/:match*"
+    },
+    {
+      "source": "/proxy/wiki/:match*",
+      "destination": "https://en.wikipedia.org/:match*"
+    },
+    {
+      "source": "/proxy/rss-aljazeera/:match*",
+      "destination": "https://www.aljazeera.com/:match*"
+    },
+    {
+      "source": "/proxy/rss-bbc/:match*",
+      "destination": "https://feeds.bbci.co.uk/:match*"
+    },
+    {
+      "source": "/proxy/rss-nyt/:match*",
+      "destination": "https://rss.nytimes.com/:match*"
+    },
+    {
+      "source": "/proxy/firms/:match*",
+      "destination": "https://firms.modaps.eosdis.nasa.gov/:match*"
+    },
+    {
+      "source": "/proxy/reliefweb/:match*",
+      "destination": "https://reliefweb.int/:match*"
+    },
+    {
+      "source": "/proxy/gdacs/:match*",
+      "destination": "https://www.gdacs.org/:match*"
+    },
+    {
+      "source": "/proxy/weather/:match*",
+      "destination": "https://api.weather.gov/:match*"
+    },
+    {
+      "source": "/proxy/celestrak/:match*",
+      "destination": "https://celestrak.org/:match*"
+    },
+    {
+      "source": "/proxy/opensky/:match*",
+      "destination": "https://opensky-network.org/:match*"
+    },
+    {
+      "source": "/proxy/adsb/:match*",
+      "destination": "https://api.adsb.lol/:match*"
+    },
+    {
+      "source": "/proxy/polymarket/:match*",
+      "destination": "https://gamma-api.polymarket.com/:match*"
+    },
+    {
+      "source": "/(.*)",
+      "destination": "/index.html"
+    }
+  ]
+}

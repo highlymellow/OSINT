@@ -672,7 +672,7 @@ export async function fetchSatellitePositions(params?: {
   // Try backend first (has full SGP4 propagation)
   try {
     const groupStr = groups.join(',')
-    const res = await fetch(`/api/v1/satellites/positions?group=${groupStr}&limit=${limit}`)
+    const res = await fetch(`${import.meta.env.VITE_API_URL || ''}/api/v1/satellites/positions?group=${groupStr}&limit=${limit}`)
     if (res.ok) {
       const data = await res.json()
       if (data.satellites?.length > 0) return data.satellites
@@ -834,7 +834,7 @@ export async function fetchCorrelations(params?: {
   const minScore = params?.minScore || 0.4
 
   try {
-    const res = await fetch(`/api/v1/correlation/analyze?region=${region}&hours=${hours}&min_score=${minScore}`)
+    const res = await fetch(`${import.meta.env.VITE_API_URL || ''}/api/v1/correlation/analyze?region=${region}&hours=${hours}&min_score=${minScore}`)
     console.log('[OSINT] Correlation API raw response status:', res.status)
     if (res.ok) {
       const data = await res.json()
@@ -858,7 +858,7 @@ export async function fetchCorrelationSummary(region?: string): Promise<{
   top_finding: string
 }> {
   try {
-    const res = await fetch(`/api/v1/correlation/summary?region=${region || 'iraq'}`)
+    const res = await fetch(`${import.meta.env.VITE_API_URL || ''}/api/v1/correlation/summary?region=${region || 'iraq'}`)
     if (res.ok) {
       return await res.json()
     }
@@ -886,8 +886,8 @@ export async function fetchAircraft(params?: {
 
   try {
     const [openSkyRes, adsbRes] = await Promise.all([
-      fetch(`/api/v1/flights/live?lat_min=${latMin}&lat_max=${latMax}&lng_min=${lngMin}&lng_max=${lngMax}&military_only=${militaryOnly}`),
-      fetch(`/api/v1/flights/adsb-mil`)
+      fetch(`${import.meta.env.VITE_API_URL || ''}/api/v1/flights/live?lat_min=${latMin}&lat_max=${latMax}&lng_min=${lngMin}&lng_max=${lngMax}&military_only=${militaryOnly}`),
+      fetch(`${import.meta.env.VITE_API_URL || ''}/api/v1/flights/adsb-mil`)
     ])
 
     if (openSkyRes.ok) {
@@ -994,7 +994,7 @@ export async function fetchMaritime(): Promise<Vessel[]> {
 
 export async function fetchGPSJamming(zone?: string): Promise<GPSJammingEvent[]> {
   try {
-    const res = await fetch(`/api/v1/flights/gps-jamming?zone=${zone || 'all'}`)
+    const res = await fetch(`${import.meta.env.VITE_API_URL || ''}/api/v1/flights/gps-jamming?zone=${zone || 'all'}`)
     if (res.ok) {
       const data = await res.json()
       return data.events || []
@@ -1008,7 +1008,7 @@ export async function fetchGPSJamming(zone?: string): Promise<GPSJammingEvent[]>
 
 export async function fetchRadioReceivers(region?: string): Promise<RadioReceiver[]> {
   try {
-    const res = await fetch(`/api/v1/radio/receivers?region=${region || 'all'}`)
+    const res = await fetch(`${import.meta.env.VITE_API_URL || ''}/api/v1/radio/receivers?region=${region || 'all'}`)
     if (res.ok) {
       const data = await res.json()
       return data.receivers || []
@@ -1019,7 +1019,7 @@ export async function fetchRadioReceivers(region?: string): Promise<RadioReceive
 
 export async function fetchRadioFrequencies(type?: string): Promise<RadioFrequency[]> {
   try {
-    const res = await fetch(`/api/v1/radio/frequencies?type=${type || 'all'}`)
+    const res = await fetch(`${import.meta.env.VITE_API_URL || ''}/api/v1/radio/frequencies?type=${type || 'all'}`)
     if (res.ok) {
       const data = await res.json()
       return data.frequencies || []
@@ -1034,7 +1034,7 @@ export async function fetchRadioFrequencies(type?: string): Promise<RadioFrequen
 export async function fetchShodanResults(query?: string): Promise<{ results: ShodanResult[]; total: number; source: string }> {
   try {
     const q = encodeURIComponent(query || 'port:502 country:"IQ"')
-    const res = await fetch(`/api/v1/shodan/search?query=${q}`)
+    const res = await fetch(`${import.meta.env.VITE_API_URL || ''}/api/v1/shodan/search?query=${q}`)
     if (res.ok) {
       const data = await res.json()
       return {
@@ -1066,7 +1066,7 @@ export async function fetchCCTVCameras(params?: {
 }): Promise<CCTVCamera[]> {
   try {
     const { region = 'all', type = 'all', country = 'all' } = params || {}
-    const res = await fetch(`/api/v1/cctv/cameras?region=${region}&type=${type}&country=${country}`)
+    const res = await fetch(`${import.meta.env.VITE_API_URL || ''}/api/v1/cctv/cameras?region=${region}&type=${type}&country=${country}`)
     if (res.ok) {
       const data = await res.json()
       return data.cameras || []

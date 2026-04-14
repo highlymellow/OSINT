@@ -237,7 +237,7 @@ function HostReconPanel() {
   const handleScan = async () => {
     setLoading(true)
     try {
-      const res = await fetch(`/api/v1/cyber/nmap-scan?ip=${ip}`)
+      const res = await fetch(`${import.meta.env.VITE_API_URL || ''}/api/v1/cyber/nmap-scan?ip=${ip}`)
       const data = await res.json()
       setResults(data)
     } catch {
