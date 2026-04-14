@@ -9,6 +9,11 @@ from fastapi.middleware.cors import CORSMiddleware
 from contextlib import asynccontextmanager
 import time
 import logging
+import sys
+import os
+
+# Appease VS Code / Pyright Linter module resolution
+sys.path.append(os.path.dirname(os.path.abspath(__file__)))
 
 from core.config import settings
 from routers import sti, events, actors, health, foresight, forge, lens, pulse, osint_proxy, satellites, maritime, correlation, flights, radio, shodan_search, cctv, cyber, escalation
@@ -43,14 +48,10 @@ app.add_middleware(
     CORSMiddleware,
     allow_origins=[
         "http://localhost:3000",    # Next.js dev
-        "http://localhost:3001",    # Next.js alt
         "http://localhost:5173",    # Vite React dev
-        "http://localhost:5174",    # Vite React alt port
         "http://127.0.0.1:5173",    # Vite Python mapping
-        "http://127.0.0.1:5174",    # Vite alt port
-        "http://localhost:8080",    # Vue/Webpack dev
-        "https://meridian.app",     # Production
-    ],
+        "https://meridian.app",     # Default Production
+    ] + [origin for origin in os.getenv("CORS_ORIGINS", "").split(",") if origin],
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],

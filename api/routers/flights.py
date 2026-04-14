@@ -21,7 +21,9 @@ _flight_cache: dict = {}
 _flight_cache_ts: float = 0
 FLIGHT_CACHE_TTL = 30  # 30 seconds — aircraft move fast
 
-OPENSKY_AUTH = ("HighlyMellow", "qiFsax-zonqor-2qokbe")
+import os
+
+OPENSKY_AUTH = (os.getenv("OPENSKY_USERNAME", ""), os.getenv("OPENSKY_PASSWORD", "")) if os.getenv("OPENSKY_USERNAME") else None
 
 def _get_client() -> httpx.AsyncClient:
     global _client

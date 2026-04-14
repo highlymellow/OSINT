@@ -3,7 +3,7 @@ import { motion } from 'motion/react'
 import {
   FileText, Layers, Target, Shield, Activity,
   Clock, Users, Search, Plus, ExternalLink, Eye, Info,
-  Binoculars, Brain
+  Binoculars, Brain, UploadCloud, MapPin, Camera
 } from '@/lib/icons'
 
 // ── Types ────────────────────────────────────────────────────────
@@ -160,9 +160,13 @@ export default function ForgeView() {
         <div className="col-span-2">
           <h2 className="text-[10px] uppercase tracking-[0.2em] text-text-tertiary font-semibold mb-3 flex items-center gap-2">
             <Binoculars size={12} />
-            Evidence Vault
+            Evidence Vault & Local Forensics
           </h2>
-          <div className="space-y-2">
+          <div className="space-y-4">
+            
+            <ForensicDropzone />
+            
+            <div className="space-y-2 mt-4">
             {evidence.map((e, i) => (
               <motion.div
                 key={e.id}
@@ -186,9 +190,97 @@ export default function ForgeView() {
                 <div className="text-[8px] text-text-tertiary mt-1 italic">{e.reliability}</div>
               </motion.div>
             ))}
+            </div>
           </div>
         </div>
       </div>
+    </div>
+  )
+}
+
+function ForensicDropzone() {
+  const [loading, setLoading] = useState(false)
+  const [isDrag, setIsDrag] = useState(false)
+  const [exifData, setExifData] = useState<any>(null)
+
+  useEffect(() => {
+    if (!(window as any).exifr) {
+      const script = document.createElement('script')
+      script.src = 'https://cdn.jsdelivr.net/npm/exifr/dist/lite.umd.js'
+      document.body.appendChild(script)
+    }
+  }, [])
+
+  const handleDrop = async (e: React.DragEvent) => {
+    e.preventDefault()
+    setIsDrag(false)
+    setLoading(true)
+    const file = e.dataTransfer.files[0]
+    if (file && (window as any).exifr) {
+      try {
+        const output = await (window as any).exifr.parse(file)
+        if (output) {
+          setExifData({
+            latitude: output.latitude,
+            longitude: output.longitude,
+            make: output.Make || 'Unknown Device',
+            model: output.Model || 'Unknown Model',
+            date: output.DateTimeOriginal ? new Date(output.DateTimeOriginal).toLocaleString() : 'No timestamp'
+          })
+        } else {
+          setExifData({ error: 'No EXIF geospatial signature detected securely.' })
+        }
+      } catch {
+        setExifData({ error: 'Forensic parsing failure.' })
+      }
+    }
+    setLoading(false)
+  }
+
+  return (
+    <div className="flex flex-col gap-2">
+      <div 
+        onDragOver={e => { e.preventDefault(); setIsDrag(true) }}
+        onDragLeave={() => setIsDrag(false)}
+        onDrop={handleDrop}
+        className={`w-full border-2 border-dashed rounded-xl p-6 flex flex-col items-center justify-center transition-colors cursor-crosshair ${
+          isDrag ? 'border-green-400 bg-green-500/10' : 'border-white/10 hover:border-white/30 bg-black/20'
+        }`}
+      >
+        <UploadCloud size={24} className={isDrag ? 'text-green-400' : 'text-white/40'} />
+        <span className="text-[10px] font-bold tracking-[0.2em] uppercase mt-3 text-white/70">
+          {loading ? 'Extracting Signatures...' : 'Drop Evidence for Local Geo-Parsing'}
+        </span>
+        <span className="text-[9px] text-zinc-500 mt-1 max-w-[200px] text-center">
+          Executes locally. Zero cloud egress. Extracts GPS, timestamps, and hardware UUID from image EXIF.
+        </span>
+      </div>
+
+      {exifData && !exifData.error && (
+        <motion.div initial={{ opacity: 0, y: 5 }} animate={{ opacity: 1, y: 0 }} className="glass-card-solid border border-green-500/30 p-4">
+          <h4 className="text-[10px] uppercase font-bold text-green-400 tracking-widest border-b border-green-500/20 pb-2 mb-2 flex items-center gap-2">
+            <MapPin size={12} /> Target Geolocation Extracted
+          </h4>
+          <div className="grid grid-cols-2 gap-2 text-[10px] font-mono">
+            <div className="text-white/50">Lattitude:</div><div className="text-white">{exifData.latitude?.toFixed(6) || 'N/A'}</div>
+            <div className="text-white/50">Longitude:</div><div className="text-white">{exifData.longitude?.toFixed(6) || 'N/A'}</div>
+            <div className="text-white/50 pt-1 mt-1 border-t border-white/5 flex items-center gap-1"><Camera size={10} /> Hardware Make:</div><div className="text-white pt-1 mt-1 border-t border-white/5">{exifData.make}</div>
+            <div className="text-white/50">Capture Model:</div><div className="text-white">{exifData.model}</div>
+            <div className="text-white/50">System Timestamp:</div><div className="text-white text-[9px]">{exifData.date}</div>
+          </div>
+          {exifData.latitude && (
+            <button className="mt-3 w-full bg-green-500/10 hover:bg-green-500/20 border border-green-500/30 text-green-400 text-[10px] py-1.5 rounded font-bold transition-all">
+              CROSS-REFERENCE IN SPATIO-TEMPORAL LAYER
+            </button>
+          )}
+        </motion.div>
+      )}
+
+      {exifData?.error && (
+        <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="text-[10px] font-mono text-red-400 bg-red-500/10 border border-red-500/20 p-2 rounded">
+          {exifData.error}
+        </motion.div>
+      )}
     </div>
   )
 }

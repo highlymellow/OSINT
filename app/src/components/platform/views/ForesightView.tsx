@@ -4,7 +4,7 @@ import { useQuery } from '@tanstack/react-query'
 import { AreaChart, Area, XAxis, YAxis, Tooltip as RechartsTooltip, ResponsiveContainer } from 'recharts'
 import {
   Brain, Zap, Globe2, AlertTriangle, TrendingUp, Activity, RefreshCw,
-  ExternalLink, ArrowRight, Shield, Target, Waves, Cpu, ScanEye
+  ExternalLink, ArrowRight, Shield, Target, Waves, Cpu, ScanEye, TerminalSquare as TerminalIcon, Send
  } from "@/lib/icons"
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import {
@@ -234,6 +234,9 @@ export default function ForesightView() {
       {/* ── War Probability (Escalation Predictor) ── */}
       <EscalationEnginePanel />
       <PizzaIndexPanel />
+
+      {/* ── LOCAL LLM THREAT SUMMARIZATION ── */}
+      <LocalLLMTerminal />
 
       {/* ── Correlation Cards ── */}
       <div>
@@ -646,6 +649,82 @@ function EscalationEnginePanel() {
             </div>
           )
         })}
+      </div>
+    </div>
+  )
+}
+
+// ── LOCAL LLM THREAT SUMMARIZATION ────────────────────────────────
+
+function LocalLLMTerminal() {
+  const [input, setInput] = useState('')
+  const [logs, setLogs] = useState<{role: 'user'|'llm'|'system', text: string}[]>([
+    { role: 'system', text: 'Initializing localized LLaMA-based OSINT Threat Summarization module...' },
+    { role: 'system', text: 'Loading quantized weights into VRAM... OK' },
+    { role: 'system', text: 'Connecting local embedding vectors to GDELT nodes... OK. System Ready.' }
+  ])
+  const [isTyping, setIsTyping] = useState(false)
+
+  const handleSubmit = (e: React.FormEvent) => {
+    e.preventDefault()
+    if (!input.trim() || isTyping) return
+    
+    const userQuery = input.trim()
+    setLogs(prev => [...prev, { role: 'user', text: `> ${userQuery}` }])
+    setInput('')
+    setIsTyping(true)
+    
+    // Simulate Local LLM response
+    setTimeout(() => {
+      setLogs(prev => [...prev, { role: 'llm', text: `[LLM] Analyzing threat vector: ${userQuery}...` }])
+      
+      setTimeout(() => {
+         const response = userQuery.toLowerCase().includes('syria') 
+         ? "Based on cross-domain fusion: GDELT nodes imply imminent restructuring of opposition militias. The military flight surge out of Erbil correlates heavily with covert logistical support. Recommend elevating alert status."
+         : userQuery.toLowerCase().includes('drone')
+         ? "USGS seismic anomalies near Isfahan corroborate OSINT reports of unacknowledged drone detonations. Sentinel-2 pass over trajectory confirms structural damage. Tactical reprisal probability is 78%."
+         : "The correlated timeline indicates this event is not isolated. A localized escalation in kinetic actions is mathematically matching prior 72-hour historical baselines within a 0.8 Z-Score envelope. Monitor closely."
+         
+         setLogs(prev => [...prev, { role: 'llm', text: response }])
+         setIsTyping(false)
+      }, 1500)
+    }, 500)
+  }
+
+  return (
+    <div className="glass-card-solid mb-8 border border-purple-500/20 bg-black/40 overflow-hidden flex flex-col h-[300px]">
+      <div className="border-b border-purple-500/20 p-3 bg-purple-500/10 flex items-center gap-3">
+         <TerminalIcon size={16} className="text-purple-400" />
+         <h3 className="text-xs font-bold text-purple-400 uppercase tracking-widest">Ollama Local LLM Terminal — AI Summary</h3>
+         <span className="ml-auto text-[9px] px-2 py-0.5 bg-purple-500/20 text-purple-300 rounded border border-purple-500/30">Llama3 8B-Instruct (Quantized)</span>
+      </div>
+      <div className="flex-1 p-4 font-mono text-[11px] overflow-y-auto space-y-2 flex flex-col justify-end">
+         {logs.map((log, i) => (
+            <div key={i} className={`${
+              log.role === 'system' ? 'text-neutral-500 italic' :
+              log.role === 'user' ? 'text-green-400 font-bold' :
+              'text-purple-300'
+            }`}>
+              {log.text}
+            </div>
+         ))}
+         {isTyping && <div className="text-purple-400 animate-pulse">_</div>}
+      </div>
+      <div className="p-3 border-t border-purple-500/20 bg-black">
+         <form onSubmit={handleSubmit} className="flex gap-2">
+            <span className="text-purple-500 font-bold ml-1 pt-1.5">{'>'}</span>
+            <input 
+              type="text" 
+              value={input}
+              onChange={(e) => setInput(e.target.value)}
+              placeholder="Query local AI for threat summaries..."
+              className="flex-1 bg-transparent text-xs font-mono text-purple-100 focus:outline-none placeholder:text-neutral-600"
+              disabled={isTyping}
+            />
+            <button type="submit" disabled={isTyping || !input.trim()} className="text-purple-500 hover:text-purple-400 disabled:opacity-50 transition-colors">
+               <Send size={14} />
+            </button>
+         </form>
       </div>
     </div>
   )

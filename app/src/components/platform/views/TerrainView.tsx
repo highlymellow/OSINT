@@ -41,6 +41,8 @@ import {
   type ShodanResult,
   type RadioReceiver,
   type APTGroup,
+  type Vessel,
+  fetchMaritime,
 } from '@/lib/osint-feeds'
 
 const layerGroups: { category: string; layers: { id: string; name: string; color: string; icon: ComponentType<any> }[] }[] = [
@@ -75,8 +77,9 @@ const layerGroups: { category: string; layers: { id: string; name: string; color
   {
     category: 'Maritime Intel',
     layers: [
+      { id: 'maritime', name: 'Live AIS Shipping', color: '#3B82F6', icon: Boat },
       { id: 'carriers', name: 'USN Carrier Strike Groups', color: '#EF5350', icon: Anchor },
-      { id: 'navalbases', name: 'Naval Installations', color: '#78909C', icon: Boat },
+      { id: 'navalbases', name: 'Naval Installations', color: '#78909C', icon: ShieldCheck },
     ]
   },
   {
@@ -179,6 +182,14 @@ export default function TerrainView() {
     staleTime: 15_000,
   })
 
+  // Live Maritime AIS Tracking
+  const { data: maritimeVessels = [] } = useQuery({
+    queryKey: ['maritime-terrain'],
+    queryFn: () => fetchMaritime(),
+    refetchInterval: 15_000,
+    staleTime: 5_000,
+  })
+
   // CCTV Cameras
   const { data: cctvCameras = [] } = useQuery({
     queryKey: ['cctv-terrain'],
@@ -249,6 +260,7 @@ export default function TerrainView() {
              shodan={shodanAssets}
              cctv={cctvCameras}
              radio={radioReceivers}
+             vessels={maritimeVessels}
              onSelect={setSelectedEntity}
           />
 
@@ -497,6 +509,31 @@ export default function TerrainView() {
               <span className="block text-[8px] text-text-muted uppercase">Sensors</span>
               <span className="block text-sm font-mono text-teal-400 font-bold">{cctvCameras.length + shodanAssets.length + radioReceivers.length}</span>
             </div>
+          </div>
+        </div>
+      </div>
+
+      {/* ── 4D Spatio-Temporal Time Scrubber ── */}
+      <div className="absolute bottom-6 left-1/2 -translate-x-1/2 w-full max-w-3xl z-40 glass-card p-3 rounded-2xl border border-white/10 shadow-2xl flex flex-col gap-2">
+        <div className="flex items-center justify-between text-[9px] uppercase font-bold tracking-[0.2em] text-text-muted px-2">
+          <span>T-MINUS 72 HOURS</span>
+          <span className="text-gold uppercase tracking-[0.3em]">4D Spatio-Temporal Reconstruction Player</span>
+          <span className="text-white">PRESENT (LIVE)</span>
+        </div>
+        <div className="flex items-center gap-4">
+          <button className="w-8 h-8 rounded-full bg-gold/10 hover:bg-gold/20 flex items-center justify-center border border-gold/30 text-gold transition-colors shrink-0">
+            <Play size={14} className="ml-0.5" />
+          </button>
+          <div className="flex-1 relative h-6 group cursor-pointer">
+            <div className="absolute inset-y-0 left-0 right-0 top-1/2 -translate-y-1/2 h-1 bg-white/10 rounded-full overflow-hidden">
+               <div className="absolute left-0 top-0 bottom-0 w-[85%] bg-gradient-to-r from-gold/10 to-gold rounded-full shadow-[0_0_10px_gold]" />
+            </div>
+            {/* Event Markers plotted recursively on timeline */}
+            <div className="absolute left-[15%] top-1/2 -translate-y-1/2 w-1.5 h-1.5 bg-red-500 rounded-full shadow-[0_0_5px_red]" />
+            <div className="absolute left-[35%] top-1/2 -translate-y-1/2 w-1.5 h-1.5 bg-blue-500 rounded-full shadow-[0_0_5px_blue]" />
+            <div className="absolute left-[65%] top-1/2 -translate-y-1/2 w-1 h-3 bg-gold rounded-[1px] shadow-[0_0_5px_gold]" />
+            {/* The Draggable Scrubber */}
+            <div className="absolute left-[85%] top-1/2 -translate-[50%] -translate-y-1/2 w-3 h-3 bg-white border-2 border-gold rounded-full shadow-[0_0_10px_rgba(234,179,8,1)] transition-transform group-hover:scale-150" />
           </div>
         </div>
       </div>

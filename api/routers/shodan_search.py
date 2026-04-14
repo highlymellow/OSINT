@@ -23,7 +23,7 @@ _shodan_cache_ts: float = 0
 SHODAN_CACHE_TTL = 600  # 10 min cache (Shodan rate limits are tight)
 
 # Use provided key or fallback to environment/settings
-SHODAN_API_KEY = "swMiGefggmlfjl90O9XPrmWxm4hvJiF6"
+SHODAN_API_KEY = os.getenv("SHODAN_API_KEY", "")
 
 def _get_client() -> httpx.AsyncClient:
     global _client

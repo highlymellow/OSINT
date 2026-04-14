@@ -236,5 +236,6 @@ export type NavView =
   | "foresight"
   | "forge"
   | "press"
+  | "codex"
   | "alerts"
   | "settings";

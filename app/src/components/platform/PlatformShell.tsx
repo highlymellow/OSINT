@@ -14,6 +14,7 @@ import ForesightView from './views/ForesightView'
 import LensView from './views/LensView'
 import PulseView from './views/PulseView'
 import ForgeView from './views/ForgeView'
+import CodexView from './views/CodexView'
 import ComingSoonView from './views/ComingSoonView'
 
 export default function PlatformShell() {
@@ -32,6 +33,7 @@ export default function PlatformShell() {
       case 'lens': return <LensView />
       case 'pulse': return <PulseView />
       case 'forge': return <ForgeView />
+      case 'codex': return <CodexView />
       case 'alerts':
       case 'settings':
         return <ComingSoonView module={currentView} />

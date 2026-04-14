@@ -2,7 +2,8 @@ import { useEffect, useState } from 'react'
 import { motion } from 'motion/react'
 import {
   Activity, TrendingUp, TrendingDown, GasPump, Globe,
-  BarChart3, Target, Info
+  BarChart3, Target, Info, Search, ShieldAlert,
+  Bitcoin, Coins
 } from '@/lib/icons'
 
 // ── Types ────────────────────────────────────────────────────────
@@ -26,6 +27,8 @@ export default function PulseView() {
   const [risks, setRisks] = useState<InvestmentRisk[]>([])
   const [trade, setTrade] = useState<TradeFlow[]>([])
   const [loading, setLoading] = useState(true)
+  const [activeTab, setActiveTab] = useState<'macro' | 'crypto'>('macro')
+  const [cryptoSearch, setCryptoSearch] = useState('')
 
   useEffect(() => {
     Promise.all([
@@ -60,11 +63,26 @@ export default function PulseView() {
             Sub-national economic indicators, energy sector analytics, and bilateral trade flow monitoring.
           </p>
         </div>
-        <div className="flex items-center gap-2 text-[10px] text-green-400 font-mono">
-          <Activity size={12} className="animate-pulse" /> LIVE DATA
-        </div>
       </div>
 
+      {/* Tabs */}
+      <div className="flex gap-2 p-1 bg-surface rounded-xl w-fit border border-border">
+        <button
+           onClick={() => setActiveTab('macro')}
+           className={`px-6 py-2.5 rounded-lg text-xs font-semibold tracking-wide transition-all ${activeTab === 'macro' ? 'bg-gold/15 text-gold' : 'text-text-muted hover:text-white'}`}
+        >
+          Macro-Economics
+        </button>
+        <button
+           onClick={() => setActiveTab('crypto')}
+           className={`px-6 py-2.5 rounded-lg text-xs font-semibold tracking-wide transition-all flex items-center gap-2 ${activeTab === 'crypto' ? 'bg-gold/15 text-gold' : 'text-text-muted hover:text-white'}`}
+        >
+          OFAC Sanctions Tracker
+        </button>
+      </div>
+
+      {activeTab === 'macro' && (
+      <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="space-y-6">
       {/* Economic KPIs */}
       <div>
         <h2 className="text-[10px] uppercase tracking-[0.2em] text-text-tertiary font-semibold mb-3">
@@ -203,6 +221,84 @@ export default function PulseView() {
           )}
         </div>
       </div>
+      </motion.div>
+      )}
+
+      {/* ── Blockchain OSINT ── */}
+      {activeTab === 'crypto' && (
+        <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="flex-1 flex flex-col items-center justify-center p-8 text-center border-2 border-dashed border-red-500/30 rounded-2xl bg-red-500/5 max-w-4xl mx-auto w-full">
+           <ShieldAlert size={48} className="text-red-400 mb-4" />
+           <h2 className="text-lg font-bold text-red-500 tracking-widest uppercase mb-2">Targeted Sanctions & Blockchain OSINT</h2>
+           <p className="text-sm text-red-400/80 max-w-lg mx-auto mb-8">
+             Perform cross-chain analysis against the OFAC Specially Designated Nationals (SDN) lists. Intercept automated routing to terror-financing syndicates.
+           </p>
+
+           <div className="w-full bg-deep-black rounded-xl p-6 border border-red-500/20 shadow-[0_0_30px_rgba(239,68,68,0.1)] text-left flex flex-col gap-6">
+             <div className="relative">
+                <Search size={16} className="absolute left-4 top-1/2 -translate-y-1/2 text-red-400" />
+                <input 
+                  type="text" 
+                  value={cryptoSearch}
+                  onChange={(e) => setCryptoSearch(e.target.value)}
+                  placeholder="Enter BTC, ETH, TRX or Monero wallet to scan against OFAC Database..."
+                  className="w-full pl-11 pr-4 py-3 bg-red-500/10 border border-red-500/30 rounded-lg text-sm text-white placeholder:text-red-400/50 focus:outline-none focus:border-red-400 font-mono"
+                  disabled
+                />
+             </div>
+             
+             <div className="flex gap-4">
+               {/* Pre-cached SDN Nodes */}
+               <div className="w-1/2 space-y-3">
+                 <h4 className="text-[10px] text-red-400 uppercase tracking-widest font-bold">LATEST HIGHLIGHTED SDN ADDITIONS</h4>
+                 
+                 <div className="p-3 bg-red-500/10 rounded-lg border border-red-500/30">
+                    <div className="flex justify-between items-start mb-2">
+                       <div>
+                         <span className="text-xs font-bold text-white block">TG8Xm1...9sMk</span>
+                         <span className="text-[10px] text-red-400 block mt-0.5">TRON (TRC20)</span>
+                       </div>
+                       <span className="px-1.5 py-0.5 bg-red-500 text-white font-bold text-[9px] rounded">Quds Force / Hezbollah</span>
+                    </div>
+                    <div className="text-[10px] text-text-muted mt-2 border-t border-red-500/20 pt-2 flex justify-between">
+                       <span>Total Flow: <span className="text-white">$14.2M USD</span></span>
+                       <span>289 Txns</span>
+                    </div>
+                 </div>
+
+                 <div className="p-3 bg-red-500/10 rounded-lg border border-red-500/30">
+                    <div className="flex justify-between items-start mb-2">
+                       <div>
+                         <span className="text-xs font-bold text-white block">1FzWLk...y49P</span>
+                         <span className="text-[10px] text-orange-400 block mt-0.5">BITCOIN (BTC)</span>
+                       </div>
+                       <span className="px-1.5 py-0.5 bg-orange-500 text-white font-bold text-[9px] rounded">PMC Wagner Group</span>
+                    </div>
+                    <div className="text-[10px] text-text-muted mt-2 border-t border-red-500/20 pt-2 flex justify-between">
+                       <span>Total Flow: <span className="text-white">840.5 BTC</span></span>
+                       <span>12 Txns</span>
+                    </div>
+                 </div>
+               </div>
+
+               {/* Threat Graph Simulation */}
+               <div className="w-1/2 bg-red-500/5 rounded-lg border border-red-500/20 p-4 flex flex-col items-center justify-center relative overflow-hidden">
+                 <div className="absolute inset-0 bg-[linear-gradient(rgba(239,68,68,0.05)_1px,transparent_1px),linear-gradient(90deg,rgba(239,68,68,0.05)_1px,transparent_1px)] bg-[size:20px_20px]" />
+                 <div className="relative z-10 w-24 h-24 rounded-full border border-red-500/50 flex items-center justify-center shadow-[0_0_20px_rgba(239,68,68,0.2)]">
+                    <ShieldAlert size={32} className="text-red-500 animate-pulse" />
+                 </div>
+                 <span className="relative z-10 text-[10px] font-bold text-red-400 uppercase mt-4 text-center">
+                    CHAINALYSIS ENGINE HOOKED.<br/>AWAITING WALLET INPUT.
+                 </span>
+                 
+                 {/* Fake nodes */}
+                 <div className="absolute top-1/4 left-1/4 w-3 h-3 bg-red-400 rounded-full animate-pulse shadow-[0_0_10px_red]"></div>
+                 <div className="absolute bottom-1/4 right-1/4 w-3 h-3 bg-orange-400 rounded-full animate-pulse shadow-[0_0_10px_orange]"></div>
+               </div>
+             </div>
+           </div>
+        </motion.div>
+      )}
+
     </div>
   )
 }

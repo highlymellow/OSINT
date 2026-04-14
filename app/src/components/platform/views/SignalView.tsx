@@ -13,12 +13,18 @@ import { formatTimestamp, getSeverityColor, getStatusColor, getStatusBg } from '
 import { useState, useMemo } from 'react'
 import { 
   RadioTower, CheckCircle, AlertTriangle, Search,
-  ExternalLink, Globe2, Zap, TrendingDown, Rss, RefreshCw, Shield
+  ExternalLink, Globe2, Zap, TrendingDown, Rss, RefreshCw, Shield, Headset, SplitSquareHorizontal
  } from "@/lib/icons"
 
 const SEVERITY_LEVELS = ['all', 'critical', 'high', 'medium', 'low'] as const
 const EVENT_TYPES = ['all', 'conflict', 'political', 'economic', 'social', 'security', 'climate', 'humanitarian'] as const
 const FEED_SOURCES = ['all', 'meridian', 'gdelt', 'reliefweb', 'gdacs'] as const
+
+const SIGNAL_TABS = [
+  { id: 'feed', label: 'Global SigInt Feed', icon: Rss },
+  { id: 'matrix', label: 'Narrative Matrix', icon: SplitSquareHorizontal },
+  { id: 'websdr', label: 'WebSDR Intercepts', icon: Headset },
+] as const
 
 type FeedBadge = 'internal' | 'gdelt' | 'reliefweb' | 'gdacs'
 
@@ -163,9 +169,30 @@ export default function SignalView() {
 
   const liveCount = gdeltEvents.length + reliefWebReports.length + gdacsAlerts.length
   const isAnyLiveLoading = gdeltLoading || rwLoading || gdacsLoading
+  const [activeTab, setActiveTab] = useState<'feed' | 'matrix' | 'websdr'>('feed')
 
   return (
-    <div className="p-6 space-y-4 animate-fade-in">
+    <div className="p-6 space-y-4 animate-fade-in flex flex-col h-full">
+      {/* ── Tabs Navigation ── */}
+      <div className="flex gap-1 p-1 bg-surface rounded-xl border border-border w-fit shrink-0">
+        {SIGNAL_TABS.map((tab) => (
+          <button
+            key={tab.id}
+            onClick={() => setActiveTab(tab.id as any)}
+            className={`flex items-center gap-2 px-6 py-2.5 rounded-lg text-xs font-semibold tracking-wide transition-all ${
+              activeTab === tab.id
+                ? 'bg-gold/15 text-gold'
+                : 'text-text-muted hover:text-text-secondary hover:bg-surface-hover'
+            }`}
+          >
+            <tab.icon size={16} />
+            {tab.label}
+          </button>
+        ))}
+      </div>
+
+      {activeTab === 'feed' && (
+      <>
       {/* ── Live Status Banner ── */}
       <motion.div
         initial={{ opacity: 0, y: -10 }}
@@ -378,6 +405,118 @@ export default function SignalView() {
           </motion.div>
         ))}
       </div>
+      </>
+      )}
+
+      {/* ── Narrative Divergence Matrix ── */}
+      {activeTab === 'matrix' && (
+        <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="flex-1 flex flex-col items-center justify-center p-8 text-center border-2 border-dashed border-border rounded-2xl bg-surface/30">
+           <SplitSquareHorizontal size={48} className="text-gold/40 mb-4" />
+           <h2 className="text-lg font-bold text-text-primary tracking-widest uppercase mb-2">Narrative Divergence Matrix</h2>
+           <p className="text-sm text-text-muted max-w-lg mx-auto mb-8">
+             Comparing state-aligned media framing across geopolitical fault lines. The matrix actively processes identical conflict events through Western, Eastern, and Middle-Eastern proprietary sentiment algorithms.
+           </p>
+           
+           <div className="w-full grid grid-cols-1 lg:grid-cols-3 gap-6 text-left">
+             {/* Actor 1: Western Media */}
+             <div className="glass-card-solid p-6 border-blue-500/20">
+               <div className="flex items-center justify-between mb-4">
+                 <h4 className="text-sm font-bold text-blue-400 uppercase tracking-wider">US / Western Alignment</h4>
+                 <span className="text-[10px] text-blue-400/50 font-mono">AP, Reuters, NYT</span>
+               </div>
+               <div className="p-4 bg-surface-elevated rounded-lg mb-3 border border-blue-500/10">
+                 <div className="text-[10px] text-text-muted mb-1">Event: BAB EL-MANDEB ATTACK</div>
+                 <p className="text-sm">"Houthi rebel militants execute unprovoked asymmetric drone strike on international commercial shipping corridor, threatening global supply chains."</p>
+                 <div className="mt-3 flex justify-between items-center text-[10px] font-mono">
+                   <span className="text-blue-400 bg-blue-500/10 px-2 py-0.5 rounded">SENTIMENT: -0.84</span>
+                   <span className="text-text-muted">FOCUS: TERRORISM</span>
+                 </div>
+               </div>
+             </div>
+
+             {/* Actor 2: Russian/Eastern Media */}
+             <div className="glass-card-solid p-6 border-red-500/20">
+               <div className="flex items-center justify-between mb-4">
+                 <h4 className="text-sm font-bold text-red-400 uppercase tracking-wider">Russian Alignment</h4>
+                 <span className="text-[10px] text-red-400/50 font-mono">RT, Sputnik, TASS</span>
+               </div>
+               <div className="p-4 bg-surface-elevated rounded-lg mb-3 border border-red-500/10">
+                 <div className="text-[10px] text-text-muted mb-1">Event: BAB EL-MANDEB ATTACK</div>
+                 <p className="text-sm">"Local Yemeni armed forces blockade illegitimate Western-backed cargo vessels escalating tensions amidst widespread anti-imperialist solidarity."</p>
+                 <div className="mt-3 flex justify-between items-center text-[10px] font-mono">
+                   <span className="text-red-400 bg-red-500/10 px-2 py-0.5 rounded">SENTIMENT: +0.22</span>
+                   <span className="text-text-muted">FOCUS: BLOCKADE</span>
+                 </div>
+               </div>
+             </div>
+
+             {/* Actor 3: Iranian Media */}
+             <div className="glass-card-solid p-6 border-green-500/20">
+               <div className="flex items-center justify-between mb-4">
+                 <h4 className="text-sm font-bold text-green-400 uppercase tracking-wider">Axis of Resistance</h4>
+                 <span className="text-[10px] text-green-400/50 font-mono">PressTV, Al-Manar, IRNA</span>
+               </div>
+               <div className="p-4 bg-surface-elevated rounded-lg mb-3 border border-green-500/10">
+                 <div className="text-[10px] text-text-muted mb-1">Event: BAB EL-MANDEB ATTACK</div>
+                 <p className="text-sm">"Yemeni heroic naval resistance units successfully intercept and deter hostile Zionist-linked tanker in defense of oppressed populations."</p>
+                 <div className="mt-3 flex justify-between items-center text-[10px] font-mono">
+                   <span className="text-green-400 bg-green-500/10 px-2 py-0.5 rounded">SENTIMENT: +0.76</span>
+                   <span className="text-text-muted">FOCUS: RESISTANCE</span>
+                 </div>
+               </div>
+             </div>
+           </div>
+        </motion.div>
+      )}
+
+      {/* ── WebSDR Military Chatter ── */}
+      {activeTab === 'websdr' && (
+        <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="flex-1 flex flex-col items-center justify-center p-8 text-center border-2 border-dashed border-gold/30 rounded-2xl bg-gold/5 max-w-4xl mx-auto w-full">
+           <RadioTower size={48} className="text-gold mb-4 animate-pulse" />
+           <h2 className="text-lg font-bold text-gold tracking-widest uppercase mb-2">Tactical WebSDR Terminal</h2>
+           <p className="text-sm text-gold/70 max-w-lg mx-auto mb-8">
+             Live RF interception and decoding of anomalous shortwave and VHF transmissions near conflict perimeters. Includes algorithmic Numbers Station decoding.
+           </p>
+
+           <div className="w-full bg-deep-black rounded-xl p-6 border border-gold/20 shadow-[0_0_30px_rgba(234,179,8,0.1)] text-left flex gap-6">
+             <div className="w-1/3 border-r border-gold/20 pr-6 space-y-4">
+                 <div className="p-3 bg-gold/10 rounded border border-gold/30 cursor-pointer">
+                    <span className="text-xs font-bold text-gold block">UVB-76 "The Buzzer"</span>
+                    <span className="text-[10px] text-gold/60 font-mono block">4625 kHz · USB · Russia</span>
+                    <span className="text-[9px] px-1.5 py-0.5 bg-red-500/20 text-red-500 mt-2 inline-block rounded">ACTIVE TRANSMISSION</span>
+                 </div>
+                 <div className="p-3 hover:bg-gold/5 rounded border border-transparent cursor-pointer transition-colors">
+                    <span className="text-xs font-bold text-white block">E11 Numbers Station</span>
+                    <span className="text-[10px] text-white/50 font-mono block">8083 kHz · AM · Eastern Bloc</span>
+                    <span className="text-[9px] px-1.5 py-0.5 bg-white/10 text-white/40 mt-2 inline-block rounded">SILENT</span>
+                 </div>
+                 <div className="p-3 hover:bg-gold/5 rounded border border-transparent cursor-pointer transition-colors">
+                    <span className="text-xs font-bold text-white block">VHF Maritime Guard</span>
+                    <span className="text-[10px] text-white/50 font-mono block">156.800 MHz · FM · Red Sea</span>
+                    <span className="text-[9px] px-1.5 py-0.5 bg-green-500/20 text-green-500 mt-2 inline-block rounded">RECEIVING</span>
+                 </div>
+             </div>
+             
+             <div className="flex-1 flex flex-col font-mono text-sm leading-relaxed">
+                <div className="flex justify-between text-[10px] text-gold/50 mb-4 border-b border-gold/20 pb-2">
+                   <span>STREAMING: UVB-76 DATA BURST</span>
+                   <span>ALGORITHM: WHISPER-V3 HYBRID</span>
+                </div>
+                <div className="text-gold/80 bg-gold/5 p-4 rounded h-48 overflow-y-auto">
+                   [15:42:01] BUZZER INTERRUPTED.<br />
+                   [15:42:03] VOICE MARKER DETECTED.<br />
+                   [15:42:05] S-I-R-E-N-A (Сирена)<br />
+                   [15:42:08] 9-3-8-8-2<br />
+                   [15:42:11] K-R-E-M-N-I-Y (Кремний)<br />
+                   [15:42:15] 7-4-1-1-0<br />
+                   [15:42:19] T-R-A-K-T-O-R (Трактор)<br />
+                   <span className="animate-pulse bg-gold text-deep-black mt-2 inline-block">&nbsp;DECODING...&nbsp;</span>
+                </div>
+             </div>
+           </div>
+        </motion.div>
+      )}
+
     </div>
   )
 }

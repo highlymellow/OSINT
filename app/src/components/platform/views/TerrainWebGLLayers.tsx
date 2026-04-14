@@ -1,6 +1,7 @@
 import { useEffect } from 'react';
 import { useMap } from '@/components/ui/map';
-import type { Aircraft, Satellite, ShodanResult, CCTVCamera, RadioReceiver } from '@/lib/osint-feeds';
+import { KRG_BORDER, ARTICLE_140, HOT_ZONES, CLIMATE_SECURITY } from '@/lib/iraq-boundaries';
+import type { Aircraft, Satellite, ShodanResult, CCTVCamera, RadioReceiver, Vessel } from '@/lib/osint-feeds';
 
 type Props = {
   activeLayers: string[];
@@ -9,6 +10,7 @@ type Props = {
   shodan: ShodanResult[];
   cctv: CCTVCamera[];
   radio: RadioReceiver[];
+  vessels: Vessel[];
   onSelect?: (entity: any) => void;
 };
 
@@ -96,6 +98,12 @@ const RADIO_PATH = `
   M12 22 L20 22 L22 28 L10 28 Z
 `;
 
+// Naval Vessel / Ship Icon
+const SHIP_PATH = `
+  M16 2 L22 28 L16 24 L10 28 Z
+  M16 6 L12 24 L16 21 L20 24 Z
+`;
+
 // ── Registration Helper ─────────────────────────────────────────
 function registerIcons(map: any) {
   const icons: [string, string, string, number][] = [
@@ -105,6 +113,8 @@ function registerIcons(map: any) {
     ['icon-shodan',    SERVER_PATH,    '#10B981', 32],
     ['icon-cctv',      CCTV_PATH,     '#14B8A6', 32],
     ['icon-radio',     RADIO_PATH,    '#8B5CF6', 32],
+    ['icon-ship',      SHIP_PATH,     '#3B82F6', 32],
+    ['icon-ship-mil',  SHIP_PATH,     '#EF4444', 32],
   ];
 
   icons.forEach(([name, path, color, size]) => {
@@ -116,7 +126,7 @@ function registerIcons(map: any) {
   });
 }
 
-export function TerrainWebGLLayers({ activeLayers, aircraft, satellites, shodan, cctv, radio, onSelect }: Props) {
+export function TerrainWebGLLayers({ activeLayers, aircraft, satellites, shodan, cctv, radio, vessels, onSelect }: Props) {
   const { map, isLoaded } = useMap();
 
   // ── Layer + Source Setup ─────────────────────────────────────
@@ -126,7 +136,7 @@ export function TerrainWebGLLayers({ activeLayers, aircraft, satellites, shodan,
     // Register custom icon images on the map
     registerIcons(map);
 
-    const sources = ['aircraft', 'satellites', 'shodan', 'cctv', 'radio'];
+    const sources = ['aircraft', 'satellites', 'shodan', 'cctv', 'radio', 'maritime', 'cables'];
     
     sources.forEach(src => {
       if (!map.getSource(src)) {
@@ -136,6 +146,12 @@ export function TerrainWebGLLayers({ activeLayers, aircraft, satellites, shodan,
         });
       }
     });
+
+    // Offline Geopolitical Boundary sources
+    if (!map.getSource('krg_border')) map.addSource('krg_border', { type: 'geojson', data: KRG_BORDER as any });
+    if (!map.getSource('art_140')) map.addSource('art_140', { type: 'geojson', data: ARTICLE_140 as any });
+    if (!map.getSource('hot_zones')) map.addSource('hot_zones', { type: 'geojson', data: HOT_ZONES as any });
+    if (!map.getSource('climate_sec')) map.addSource('climate_sec', { type: 'geojson', data: CLIMATE_SECURITY as any });
 
     // ── Aircraft: symbol layer with airplane icon ──────────────
     if (!map.getLayer('aircraft-layer')) {
@@ -214,8 +230,92 @@ export function TerrainWebGLLayers({ activeLayers, aircraft, satellites, shodan,
       });
     }
 
+    // ── Maritime: symbol layer with ship icon ────────────────────
+    if (!map.getLayer('maritime-layer')) {
+      map.addLayer({
+        id: 'maritime-layer',
+        type: 'symbol',
+        source: 'maritime',
+        layout: {
+          'icon-image': ['case', ['get', 'is_military'], 'icon-ship-mil', 'icon-ship'],
+          'icon-size': ['case', ['get', 'is_military'], 0.6, 0.45],
+          'icon-rotate': ['coalesce', ['get', 'heading'], 0],
+          'icon-rotation-alignment': 'map',
+          'icon-allow-overlap': true,
+          'icon-ignore-placement': true,
+        },
+      });
+      // Anomalous Dark Ships glowing dot layer underneath
+      map.addLayer({
+        id: 'maritime-anomaly-layer',
+        type: 'circle',
+        source: 'maritime',
+        filter: ['==', ['get', 'anomaly'], 'DARK_SHIP'],
+        paint: {
+          'circle-radius': 12,
+          'circle-color': '#EF4444',
+          'circle-opacity': 0.4,
+          'circle-blur': 0.8
+        }
+      }, 'maritime-layer');
+    }
+
+    // ── Geopolitical and Terrain Overlays ──────────────────────
+    if (!map.getLayer('krg_layer')) {
+      map.addLayer({
+        id: 'krg_layer',
+        type: 'line',
+        source: 'krg_border',
+        layout: { 'line-join': 'round', 'line-cap': 'round' },
+        paint: {
+          'line-color': '#FDE047',
+          'line-width': 2,
+          'line-dasharray': [2, 4],
+          'line-opacity': 0.8
+        }
+      });
+      // Layer visibility is controlled by layout
+    }
+
+    if (!map.getLayer('art_140_layer')) {
+      map.addLayer({
+        id: 'art_140_layer',
+        type: 'circle',
+        source: 'art_140',
+        paint: {
+          'circle-radius': 15,
+          'circle-color': '#EF4444',
+          'circle-opacity': 0.3,
+          'circle-stroke-width': 2,
+          'circle-stroke-color': '#EF4444'
+        }
+      });
+      map.addLayer({
+        id: 'hot_zones_layer',
+        type: 'circle',
+        source: 'hot_zones',
+        paint: {
+          'circle-radius': ['*', ['get', 'intensity'], 30],
+          'circle-color': '#DC2626',
+          'circle-opacity': 0.2,
+          'circle-blur': 0.5
+        }
+      });
+      map.addLayer({
+        id: 'climate_layer',
+        type: 'circle',
+        source: 'climate_sec',
+        paint: {
+          'circle-radius': ['/', ['get', 'value'], 3],
+          'circle-color': '#0EA5E9',
+          'circle-opacity': 0.4,
+          'circle-blur': 0.4
+        }
+      });
+    }
+
     // ── Interaction Handlers ───────────────────────────────────
-    const layers = ['aircraft-layer', 'satellites-layer', 'shodan-layer', 'cctv-layer', 'radio-layer'];
+    const layers = ['aircraft-layer', 'satellites-layer', 'shodan-layer', 'cctv-layer', 'radio-layer', 'maritime-layer'];
     
     const clickHandler = (e: any) => {
       if (!onSelect || !e.features || e.features.length === 0) return;
@@ -249,13 +349,20 @@ export function TerrainWebGLLayers({ activeLayers, aircraft, satellites, shodan,
       if (map) {
          layers.forEach(l => {
              map.off('click', l, clickHandler);
-             map.off('mouseenter', l, mouseEnter);
+              map.off('mouseenter', l, mouseEnter);
              map.off('mouseleave', l, mouseLeave);
          });
          try {
-            ['aircraft', 'satellites', 'shodan', 'cctv', 'radio'].forEach(l => {
+            ['aircraft', 'satellites', 'shodan', 'cctv', 'radio', 'maritime', 'cables'].forEach(l => {
                if (map.getLayer(`${l}-layer`)) map.removeLayer(`${l}-layer`);
+               if (map.getLayer(`${l}-anomaly-layer`)) map.removeLayer(`${l}-anomaly-layer`);
                if (map.getSource(l)) map.removeSource(l);
+            });
+            ['krg_layer', 'art_140_layer', 'hot_zones_layer', 'climate_layer'].forEach(l => {
+                if (map.getLayer(l)) map.removeLayer(l);
+            });
+            ['krg_border', 'art_140', 'hot_zones', 'climate_sec'].forEach(src => {
+                if (map.getSource(src)) map.removeSource(src);
             });
          } catch (e) {}
       }
@@ -265,6 +372,41 @@ export function TerrainWebGLLayers({ activeLayers, aircraft, satellites, shodan,
   // ── Data Updates ─────────────────────────────────────────────
   useEffect(() => {
     if (!map || !isLoaded) return;
+
+    // Toggle Spatial Geometry Layers
+    const setVis = (l: string, on: boolean) => {
+        if (map.getLayer(l)) map.setLayoutProperty(l, 'visibility', on ? 'visible' : 'none');
+    };
+    setVis('krg_layer', activeLayers.includes('disputed'));
+    setVis('art_140_layer', activeLayers.includes('disputed'));
+    setVis('hot_zones_layer', activeLayers.includes('acled'));
+    setVis('climate_layer', activeLayers.includes('climate'));
+
+    // Maritime Vessels
+    if (activeLayers.includes('maritime') && vessels) {
+      const src: any = map.getSource('maritime');
+      if (src) {
+        src.setData({
+          type: 'FeatureCollection',
+          features: vessels.map(v => ({
+            type: 'Feature',
+            geometry: { type: 'Point', coordinates: [v.lng, v.lat] },
+            properties: { 
+                is_military: v.is_military, 
+                heading: v.heading || 0,
+                type: 'Maritime Vessel',
+                title: v.name || v.mmsi,
+                subtitle: v.anomaly ? `ANOMALY: ${v.anomaly}` : v.type,
+                anomaly: v.anomaly || 'NONE',
+                props: JSON.stringify(v)
+            }
+          }))
+        });
+      }
+    } else {
+      const src: any = map.getSource('maritime');
+      if (src) src.setData({ type: 'FeatureCollection', features: [] });
+    }
 
     // Aircraft
     if (activeLayers.includes('aircraft')) {

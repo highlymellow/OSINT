@@ -4,7 +4,7 @@ import type { NavView } from '@/lib/types'
 import { 
   Command, Fingerprint, RadioTower, Globe2, Workflow,
   ScanEye, CandlestickChart, Orbit, Cpu, TerminalSquare,
-  BellRing, Settings2, ChevronRight
+  BellRing, Settings2, ChevronRight, BookOpen
  } from "@/lib/icons"
 import { cn } from '@/lib/utils'
 
@@ -34,6 +34,7 @@ const NAV_ITEMS: NavItem[] = [
   { id: 'pulse', label: 'Pulse', icon: CandlestickChart, status: 'beta' },
   { id: 'foresight', label: 'Foresight', icon: Orbit, status: 'beta' },
   { id: 'forge', label: 'Forge', icon: Cpu, status: 'beta' },
+  { id: 'codex', label: 'Codex', icon: BookOpen, status: 'active' },
   { id: 'press', label: 'Press', icon: TerminalSquare, status: 'active' },
 ]
 
@@ -68,8 +69,8 @@ export default function Sidebar() {
             <MeridianLogo size={24} className="text-white shrink-0" />
           </div>
           {!collapsed && (
-            <span className="text-lg font-bold tracking-widest text-white drop-shadow-md">
-              MERIDIAN <span className="text-white/50 text-[10px] uppercase tracking-widest font-normal ml-1 border border-white/20 px-1.5 py-0.5 rounded-md">OSINT</span>
+            <span className="text-[13px] font-bold tracking-[0.15em] text-white drop-shadow-md">
+              SPATIO-TEMPORAL <span className="text-white/50 text-[9px] uppercase tracking-widest font-normal ml-0.5 border border-white/20 px-1 py-0.5 rounded-md">ANALYTICS</span>
             </span>
           )}
         </button>

@@ -81,7 +81,7 @@ export function canAccessModule(tier: UserTier, moduleId: string): boolean {
 // Demo accounts for development
 export const DEMO_ACCOUNTS: Record<string, { password: string; user: MeridianUser }> = {
   "admin@meridian.iq": {
-    password: "admin123",
+    password: import.meta.env.VITE_ADMIN_PASSWORD || "ENCRYPTED_ADMIN_KEY",
     user: {
       id: "usr_001",
       name: "Mohammed Anwer",
@@ -93,7 +93,7 @@ export const DEMO_ACCOUNTS: Record<string, { password: string; user: MeridianUse
     },
   },
   "analyst@meridian.iq": {
-    password: "analyst123",
+    password: import.meta.env.VITE_ANALYST_PASSWORD || "ENCRYPTED_ANALYST_KEY",
     user: {
       id: "usr_002",
       name: "Sara Al-Rashid",
@@ -105,7 +105,7 @@ export const DEMO_ACCOUNTS: Record<string, { password: string; user: MeridianUse
     },
   },
   "observer@meridian.iq": {
-    password: "observer123",
+    password: import.meta.env.VITE_OBSERVER_PASSWORD || "ENCRYPTED_OBSERVER_KEY",
     user: {
       id: "usr_003",
       name: "James Chen",
@@ -117,7 +117,7 @@ export const DEMO_ACCOUNTS: Record<string, { password: string; user: MeridianUse
     },
   },
   "press@meridian.iq": {
-    password: "press",
+    password: import.meta.env.VITE_PRESS_PASSWORD || "ENCRYPTED_PRESS_KEY",
     user: {
       id: "usr_004",
       name: "Shelly Kittleson",

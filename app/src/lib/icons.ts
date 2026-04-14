@@ -23,6 +23,7 @@ export {
   Plus,
   Lightning as Zap,
   SpeakerHifi as Radio,
+  Skull,
   Anchor,
   Waves,
   Eye,
@@ -80,4 +81,10 @@ export {
   ShieldCheck,
   NavigationArrow,
   Copy,
+  BookOpen,
+  CloudArrowUp as UploadCloud,
+  CurrencyBtc as Bitcoin,
+  Coins,
+  Headset,
+  Columns as SplitSquareHorizontal
 } from "@phosphor-icons/react";

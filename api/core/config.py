@@ -16,13 +16,13 @@ class Settings(BaseSettings):
     API_HOST: str = "0.0.0.0"
     API_PORT: int = 8000
     API_DEBUG: bool = True
-    SECRET_KEY: str = "dev-secret-change-in-production"
+    SECRET_KEY: str = "secure_placeholder"
 
     # ── PostgreSQL ───────────────────────────────────────────────
-    DATABASE_URL: str = "postgresql://meridian:meridian_dev_2026@localhost:5432/meridian"
+    DATABASE_URL: str = "postgresql://localhost:5432/meridian"
 
     # ── TimescaleDB ──────────────────────────────────────────────
-    TIMESCALE_URL: str = "postgresql://meridian:meridian_ts_2026@localhost:5433/meridian_ts"
+    TIMESCALE_URL: str = "postgresql://localhost:5433/meridian_ts"
 
     # ── Redis ────────────────────────────────────────────────────
     REDIS_URL: str = "redis://localhost:6379/0"
@@ -33,7 +33,7 @@ class Settings(BaseSettings):
     # ── Neo4j ────────────────────────────────────────────────────
     NEO4J_URI: str = "bolt://localhost:7687"
     NEO4J_USER: str = "neo4j"
-    NEO4J_PASSWORD: str = "meridian_graph_2026"
+    NEO4J_PASSWORD: str = ""
 
     # ── Kafka ────────────────────────────────────────────────────
     KAFKA_BOOTSTRAP_SERVERS: str = "localhost:19092"

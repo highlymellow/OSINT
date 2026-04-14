@@ -169,6 +169,18 @@ export interface Aircraft {
   type: string
 }
 
+export interface Vessel {
+  mmsi: string
+  name: string
+  type: string
+  lat: number
+  lng: number
+  speed: number
+  heading: number
+  is_military: boolean
+  anomaly?: string | null
+}
+
 export interface GPSJammingEvent {
   id: string
   zone: string
@@ -962,8 +974,21 @@ export async function fetchAircraft(params?: {
     console.warn('[OSINT] Aircraft fetch failed:', err)
   }
   return []
+  return []
 }
 
+export async function fetchMaritime(): Promise<Vessel[]> {
+  try {
+    const res = await fetch('/api/v1/maritime/live', { signal: AbortSignal.timeout(5000) })
+    if (res.ok) {
+      const data = await res.json()
+      return data.vessels || []
+    }
+  } catch (e) {
+    console.error("Maritime feed offline:", e)
+  }
+  return []
+}
 
 // ── GPS Jamming Detection ───────────────────────────────────────
 
